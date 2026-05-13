@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { NbWindowService } from '@nebular/theme';
-import { WindowFormComponent } from '../modal-overlays/window/window-form/window-form.component';
+import { ModalComponent } from './modal/modal.component';
 
 @Component({
   selector: 'tao-file-yaml',
@@ -15,6 +15,6 @@ export class TaoFileYamlComponent implements OnDestroy {
   }
 
   openForm() {
-    this.windowService.open(WindowFormComponent, { title: `Tạo file YAML` });
+    this.windowService.open(ModalComponent, { title: `Tạo file YAML` });
   }
 }

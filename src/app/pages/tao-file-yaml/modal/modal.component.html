@@ -1,7 +1,16 @@
 <form class="form">
-    <label for="subject">Subject:</label>
-    <input nbInput id="subject" type="text">
+  <label for="helmVersion">Chọn helm version:</label>
+  <nb-select
+    fullWidth
+    [(selected)]="selectedVersion">
+    <nb-option
+      *ngFor="let version of helmVersions"
+      [value]="version">
+      {{ version }}
+    </nb-option>
+  </nb-select>
 
-    <label class="text-label" for="text">Text:</label>
-    <textarea nbInput id="text"></textarea>
+
+  <label class="text-label" for="text">Text:</label>
+  <textarea nbInput id="text"></textarea>
 </form>
