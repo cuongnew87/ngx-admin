@@ -1,16 +1,107 @@
-<form class="form">
-  <label for="helmVersion">Chọn helm version:</label>
-  <nb-select
-    fullWidth
-    [(selected)]="selectedVersion">
-    <nb-option
-      *ngFor="let version of helmVersions"
-      [value]="version">
-      {{ version }}
-    </nb-option>
-  </nb-select>
+<form class="form p-4">
 
+  <div class="mb-4">
+    <label for="helmVersion" class="form-label mb-2">
+      Chọn helm version:
+    </label>
 
-  <label class="text-label" for="text">Text:</label>
-  <textarea nbInput id="text"></textarea>
+    <nb-select
+      fullWidth
+      [(selected)]="selectedVersion"
+      (selectedChange)="onVersionChange()">
+
+      <nb-option
+        *ngFor="let version of helmVersions"
+        [value]="version">
+
+        {{ version }}
+
+      </nb-option>
+
+    </nb-select>
+  </div>
+
+  <div class="resource-section mb-4">
+
+    <div class="form-field">
+
+      <label
+        for="fileName"
+        class="mb-2 d-block">
+
+        Tên file yaml
+
+      </label>
+
+      <input
+        nbInput
+        fullWidth
+        [(ngModel)]="fileName"
+        name="fileName"
+        placeholder="values.yaml"
+        class="mb-3">
+
+    </div>
+
+  </div>
+
+  <div
+    *ngFor="let resource of templateSchema"
+    class="resource-section pt-3 mb-4">
+
+    <h4 class="mb-3">
+      {{ resource.resource }}
+    </h4>
+
+    <div
+      *ngFor="let prop of resource.properties"
+      class="form-field mb-3">
+
+      <label class="mb-2 d-block">
+        {{ prop.label }}
+      </label>
+
+      <!-- STRING -->
+
+      <input
+        *ngIf="prop.type === 'string'"
+        nbInput
+        fullWidth
+        [(ngModel)]="formData[prop.name]"
+        [name]="prop.name"
+        [required]="prop.required">
+
+      <!-- NUMBER -->
+
+      <input
+        *ngIf="prop.type === 'number'"
+        nbInput
+        fullWidth
+        type="number"
+        [(ngModel)]="formData[prop.name]"
+        [name]="prop.name"
+        [required]="prop.required">
+
+      <!-- BOOLEAN -->
+
+      <nb-toggle
+        *ngIf="prop.type === 'boolean'"
+        [(checked)]="formData[prop.name]">
+      </nb-toggle>
+
+    </div>
+
+  </div>
+
+  <button
+    nbButton
+    status="primary"
+    (click)="exportYaml()"
+    type="button"
+    class="mt-3">
+
+    Export YAML
+
+  </button>
+
 </form>

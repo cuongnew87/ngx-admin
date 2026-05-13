@@ -33,4 +33,17 @@ export class TemplateService {
       }
     );
   }
+
+  generateYaml(
+    body: any
+  ): Observable<Blob> {
+
+    return this.http.post(
+      `${environment.beUrl}/generate/convert`,
+      body,
+      {
+        responseType: 'blob'
+      }
+    );
+  }
 }
