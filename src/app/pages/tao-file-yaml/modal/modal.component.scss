@@ -24,3 +24,41 @@
   margin-bottom: 0.5rem;
   font-weight: 600;
 }
+
+.action-section {
+  position: sticky;
+  bottom: 0;
+
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+
+  padding: 1rem 1.5rem;
+  margin-top: 1.5rem;
+
+  background: #1a2138;
+
+  border-top: 1px solid #2e3a59;
+
+  z-index: 10;
+}
+
+.file-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

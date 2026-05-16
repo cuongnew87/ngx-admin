@@ -14,19 +14,18 @@ export class ModalComponent implements OnInit {
 
   templateSchema: any[] = [];
 
-  formData: any = {};
-
-  selectedResources: string[] = [];
-
-  fileName = 'values';
+  yamlFiles: any[] = [];
 
   constructor(
-    public windowRef: NbWindowRef, 
+    public windowRef: NbWindowRef,
     private templateService: TemplateService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+
     this.loadHelmVersions();
+
+    this.addFile();
   }
 
   loadHelmVersions(): void {
@@ -40,13 +39,17 @@ export class ModalComponent implements OnInit {
           this.helmVersions = data;
 
           if (data.length > 0) {
+
             this.selectedVersion = data[0];
+
             this.onVersionChange();
           }
         },
 
         error: (err) => {
+
           console.error(err);
+
         }
       });
   }
@@ -61,18 +64,53 @@ export class ModalComponent implements OnInit {
 
           this.templateSchema = JSON.parse(data);
 
-          this.initializeFormData();
+          this.initializeAllFiles();
+
         },
 
         error: (err) => {
+
           console.error(err);
+
         }
       });
   }
 
-  initializeFormData(): void {
+  addFile(): void {
 
-    this.formData = {};
+    this.yamlFiles.push({
+
+      fileName: `values-${this.yamlFiles.length + 1}`,
+
+      selectedResources: [],
+
+      formData: {}
+
+    });
+
+    this.initializeFileData(
+      this.yamlFiles[this.yamlFiles.length - 1]
+    );
+  }
+
+  removeFile(index: number): void {
+
+    this.yamlFiles.splice(index, 1);
+
+  }
+
+  initializeAllFiles(): void {
+
+    this.yamlFiles.forEach(file => {
+
+      this.initializeFileData(file);
+
+    });
+  }
+
+  initializeFileData(file: any): void {
+
+    file.formData = {};
 
     this.templateSchema.forEach(resource => {
 
@@ -80,7 +118,7 @@ export class ModalComponent implements OnInit {
 
         if (prop.defaultValue !== undefined) {
 
-          this.formData[prop.name] =
+          file.formData[prop.name] =
             prop.defaultValue;
 
         } else {
@@ -88,29 +126,38 @@ export class ModalComponent implements OnInit {
           switch (prop.type) {
 
             case 'number':
-              this.formData[prop.name] = 0;
+
+              file.formData[prop.name] = 0;
+
               break;
 
             case 'boolean':
-              this.formData[prop.name] = false;
+
+              file.formData[prop.name] = false;
+
               break;
 
             default:
-              this.formData[prop.name] = '';
+
+              file.formData[prop.name] = '';
           }
         }
       });
     });
   }
 
-   exportYaml(): void {
+  exportYaml(): void {
 
-    const request = [
-      {
-        serviceName: this.fileName,
-        content: this.buildNestedObject(),
-      }
-    ];
+    const request = this.yamlFiles.map(file => ({
+
+      serviceName: file.fileName,
+
+      content: this.buildNestedObject(
+        file.formData,
+        file.selectedResources
+      )
+
+    }));
 
     this.templateService
       .generateYaml(request)
@@ -131,11 +178,15 @@ export class ModalComponent implements OnInit {
           a.click();
 
           window.URL.revokeObjectURL(url);
+
         }
       });
   }
 
-  buildNestedObject(): any {
+  buildNestedObject(
+    formData: any,
+    selectedResources: string[]
+  ): any {
 
     const result: any = {};
 
@@ -143,7 +194,7 @@ export class ModalComponent implements OnInit {
 
     this.templateSchema.forEach(resource => {
 
-      if (this.selectedResources.includes(resource.resource)) {
+      if (selectedResources.includes(resource.resource)) {
 
         resource.properties.forEach((prop: any) => {
 
@@ -163,7 +214,7 @@ export class ModalComponent implements OnInit {
 
         if (index === keys.length - 1) {
 
-          current[part] = this.formData[key];
+          current[part] = formData[key];
 
         } else {
 
@@ -180,7 +231,9 @@ export class ModalComponent implements OnInit {
     return result;
   }
 
-  close() {
+  close(): void {
+
     this.windowRef.close();
+
   }
 }

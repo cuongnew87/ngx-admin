@@ -6,9 +6,10 @@
 
   <nb-card-body>
 
-    <!-- VERSION -->
+    <!-- GLOBAL HELM VERSION -->
 
     <div class="form-group">
+
       <label class="label" for="helmVersion">
         Chọn helm version
       </label>
@@ -27,134 +28,203 @@
         </nb-option>
 
       </nb-select>
-    </div>
-
-    <!-- FILE NAME -->
-
-    <div class="form-group">
-      <label class="label" for="fileName">
-        Tên file yaml
-      </label>
-
-      <input
-        nbInput
-        fullWidth
-        [(ngModel)]="fileName"
-        name="fileName"
-        placeholder="values.yaml">
-    </div>
-
-    <div class="form-group">
-      <label class="label" for="selectedResources">
-        Chọn resource
-      </label>
-
-      <nb-select
-        fullWidth
-        multiple
-        [(selected)]="selectedResources">
-
-        <nb-option
-          *ngFor="let resource of templateSchema"
-          [value]="resource.resource">
-
-          {{ resource.resource }}
-
-        </nb-option>
-
-      </nb-select>
-    </div>
-
-    <!-- RESOURCES -->
-
-    <div
-      *ngFor="let resource of templateSchema">
-
-      <ng-container
-        *ngIf="selectedResources.includes(resource.resource)">
-
-        <nb-card class="resource-section">
-
-          <nb-card-header>
-            {{ resource.resource }}
-          </nb-card-header>
-
-          <nb-card-body>
-
-            <div
-              *ngFor="let prop of resource.properties"
-              class="form-group">
-
-              <label class="label" for="{{ prop.name }}">
-                {{ prop.label }}
-              </label>
-
-              <!-- STRING -->
-
-              <input
-                *ngIf="prop.type === 'string'"
-                nbInput
-                fullWidth
-                [(ngModel)]="formData[prop.name]"
-                [name]="prop.name">
-
-              <!-- NUMBER -->
-
-              <input
-                *ngIf="prop.type === 'number'"
-                nbInput
-                type="number"
-                fullWidth
-                [(ngModel)]="formData[prop.name]"
-                [name]="prop.name">
-
-              <!-- SELECT -->
-
-              <nb-select
-                *ngIf="prop.type === 'select'"
-                fullWidth
-                [(selected)]="formData[prop.name]">
-
-                <nb-option
-                  *ngFor="let option of prop.options"
-                  [value]="option">
-
-                  {{ option }}
-
-                </nb-option>
-
-              </nb-select>
-
-              <!-- BOOLEAN -->
-
-              <nb-toggle
-                *ngIf="prop.type === 'boolean'"
-                [(checked)]="formData[prop.name]">
-              </nb-toggle>
-
-            </div>
-
-          </nb-card-body>
-
-        </nb-card>
-
-      </ng-container>
 
     </div>
-
-    <!-- BUTTON -->
-
-    <button
-      nbButton
-      status="success"
-      size="large"
-      fullWidth
-      (click)="exportYaml()">
-
-      Export YAML
-
-    </button>
 
   </nb-card-body>
 
 </nb-card>
+
+<!-- YAML FILES -->
+
+<div
+  *ngFor="let file of yamlFiles; let i = index"
+  class="yaml-file-section">
+
+  <nb-card>
+
+    <!-- HEADER -->
+
+    <nb-card-header class="file-header">
+
+      <div class="header-left">
+
+        <span>
+          File YAML {{ i + 1 }}
+        </span>
+
+      </div>
+
+      <div class="header-right">
+
+        <button
+          *ngIf="yamlFiles.length > 1"
+          nbButton
+          ghost
+          status="danger"
+          size="small"
+          (click)="removeFile(i)">
+
+          <nb-icon icon="close-outline"></nb-icon>
+
+        </button>
+
+      </div>
+
+    </nb-card-header>
+
+    <!-- BODY -->
+
+    <nb-card-body>
+
+      <!-- FILE NAME -->
+
+      <div class="form-group">
+
+        <label class="label" for="fileName-{{ i }}">
+          Tên file yaml
+        </label>
+
+        <input
+          nbInput
+          fullWidth
+          [(ngModel)]="file.fileName"
+          [name]="'fileName-' + i"
+          placeholder="values.yaml">
+
+      </div>
+
+      <!-- RESOURCE SELECT -->
+
+      <div class="form-group">
+
+        <label class="label" for="resourceSelect-{{ i }}">
+          Chọn resource
+        </label>
+
+        <nb-select
+          fullWidth
+          multiple
+          [(selected)]="file.selectedResources">
+
+          <nb-option
+            *ngFor="let resource of templateSchema"
+            [value]="resource.resource">
+
+            {{ resource.resource }}
+
+          </nb-option>
+
+        </nb-select>
+
+      </div>
+
+      <!-- RESOURCE FORM -->
+
+      <div
+        *ngFor="let resource of templateSchema">
+
+        <ng-container
+          *ngIf="file.selectedResources.includes(resource.resource)">
+
+          <nb-card class="resource-section">
+
+            <nb-card-header>
+              {{ resource.resource }}
+            </nb-card-header>
+
+            <nb-card-body>
+
+              <div
+                *ngFor="let prop of resource.properties"
+                class="form-group">
+
+                <label class="label" for="{{ prop.name }}-{{ i }}">
+
+                  {{ prop.label }}
+
+                </label>
+
+                <!-- STRING -->
+
+                <input
+                  *ngIf="prop.type === 'string'"
+                  nbInput
+                  fullWidth
+                  [(ngModel)]="file.formData[prop.name]"
+                  [name]="prop.name + '-' + i">
+
+                <!-- NUMBER -->
+
+                <input
+                  *ngIf="prop.type === 'number'"
+                  nbInput
+                  type="number"
+                  fullWidth
+                  [(ngModel)]="file.formData[prop.name]"
+                  [name]="prop.name + '-' + i">
+
+                <!-- SELECT -->
+
+                <nb-select
+                  *ngIf="prop.type === 'select'"
+                  fullWidth
+                  [(selected)]="file.formData[prop.name]">
+
+                  <nb-option
+                    *ngFor="let option of prop.options"
+                    [value]="option">
+
+                    {{ option }}
+
+                  </nb-option>
+
+                </nb-select>
+
+                <!-- BOOLEAN -->
+
+                <nb-toggle
+                  *ngIf="prop.type === 'boolean'"
+                  [(checked)]="file.formData[prop.name]">
+                </nb-toggle>
+
+              </div>
+
+            </nb-card-body>
+
+          </nb-card>
+
+        </ng-container>
+
+      </div>
+
+    </nb-card-body>
+
+  </nb-card>
+
+</div>
+
+<!-- ACTION -->
+
+<div class="action-section">
+
+  <button
+    nbButton
+    status="info"
+    appearance="outline"
+    (click)="addFile()">
+
+    Thêm file
+
+  </button>
+
+  <button
+    nbButton
+    status="success"
+    (click)="exportYaml()">
+
+    Export YAML
+
+  </button>
+
+</div>
