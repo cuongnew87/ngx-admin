@@ -15,6 +15,10 @@ export class TaoFileYamlComponent implements OnDestroy {
   }
 
   openForm() {
-    this.windowService.open(ModalComponent, { title: `Tạo file YAML` });
+    this.windowService.open(ModalComponent, {
+      title: 'Tạo file YAML',
+      windowClass: 'yaml-modal',
+      context: {},
+    });
   }
 }

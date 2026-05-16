@@ -1,36 +1,39 @@
-<form class="form p-4">
+<nb-card>
 
-  <div class="mb-4">
-    <label for="helmVersion" class="form-label mb-2">
-      Chọn helm version:
-    </label>
+  <nb-card-header>
+    Tạo file YAML
+  </nb-card-header>
 
-    <nb-select
-      fullWidth
-      [(selected)]="selectedVersion"
-      (selectedChange)="onVersionChange()">
+  <nb-card-body>
 
-      <nb-option
-        *ngFor="let version of helmVersions"
-        [value]="version">
+    <!-- VERSION -->
 
-        {{ version }}
+    <div class="form-group">
+      <label class="label">
+        Chọn helm version
+      </label>
 
-      </nb-option>
+      <nb-select
+        fullWidth
+        [(selected)]="selectedVersion"
+        (selectedChange)="onVersionChange()">
 
-    </nb-select>
-  </div>
+        <nb-option
+          *ngFor="let version of helmVersions"
+          [value]="version">
 
-  <div class="resource-section mb-4">
+          {{ version }}
 
-    <div class="form-field">
+        </nb-option>
 
-      <label
-        for="fileName"
-        class="mb-2 d-block">
+      </nb-select>
+    </div>
 
+    <!-- FILE NAME -->
+
+    <div class="form-group">
+      <label class="label">
         Tên file yaml
-
       </label>
 
       <input
@@ -38,70 +41,81 @@
         fullWidth
         [(ngModel)]="fileName"
         name="fileName"
-        placeholder="values.yaml"
-        class="mb-3">
-
+        placeholder="values.yaml">
     </div>
 
-  </div>
-
-  <div
-    *ngFor="let resource of templateSchema"
-    class="resource-section pt-3 mb-4">
-
-    <h4 class="mb-3">
-      {{ resource.resource }}
-    </h4>
+    <!-- RESOURCES -->
 
     <div
-      *ngFor="let prop of resource.properties"
-      class="form-field mb-3">
+      *ngFor="let resource of templateSchema"
+      class="resource-section">
 
-      <label class="mb-2 d-block">
-        {{ prop.label }}
-      </label>
+      <nb-card size="small">
 
-      <!-- STRING -->
+        <nb-card-header>
+          {{ resource.resource }}
+        </nb-card-header>
 
-      <input
-        *ngIf="prop.type === 'string'"
-        nbInput
-        fullWidth
-        [(ngModel)]="formData[prop.name]"
-        [name]="prop.name"
-        [required]="prop.required">
+        <nb-card-body>
 
-      <!-- NUMBER -->
+          <div
+            *ngFor="let prop of resource.properties"
+            class="form-group">
 
-      <input
-        *ngIf="prop.type === 'number'"
-        nbInput
-        fullWidth
-        type="number"
-        [(ngModel)]="formData[prop.name]"
-        [name]="prop.name"
-        [required]="prop.required">
+            <label class="label">
+              {{ prop.label }}
+            </label>
 
-      <!-- BOOLEAN -->
+            <!-- STRING -->
 
-      <nb-toggle
-        *ngIf="prop.type === 'boolean'"
-        [(checked)]="formData[prop.name]">
-      </nb-toggle>
+            <input
+              *ngIf="prop.type === 'string'"
+              nbInput
+              fullWidth
+              status="primary"
+              [(ngModel)]="formData[prop.name]"
+              [name]="prop.name">
+
+            <!-- NUMBER -->
+
+            <input
+              *ngIf="prop.type === 'number'"
+              nbInput
+              fullWidth
+              type="number"
+              status="info"
+              [(ngModel)]="formData[prop.name]"
+              [name]="prop.name">
+
+            <!-- BOOLEAN -->
+
+            <nb-toggle
+              *ngIf="prop.type === 'boolean'"
+              status="success"
+              [(checked)]="formData[prop.name]">
+            </nb-toggle>
+
+          </div>
+
+        </nb-card-body>
+
+      </nb-card>
 
     </div>
 
-  </div>
+    <!-- BUTTON -->
 
-  <button
-    nbButton
-    status="primary"
-    (click)="exportYaml()"
-    type="button"
-    class="mt-3">
+    <button
+      nbButton
+      status="success"
+      size="large"
+      fullWidth
+      (click)="exportYaml()">
 
-    Export YAML
+      Export YAML
 
-  </button>
+    </button>
 
-</form>
+  </nb-card-body>
+
+</nb-card>

@@ -38,3 +38,12 @@
   @include nb-overrides();
   @include material-overrides();
 };
+
+.yaml-modal.full-screen.ng-star-inserted {
+  width: 80% !important;
+}
+
+.yaml-modal nb-card-body {
+  overflow-y: auto;
+  max-height: calc(90vh - 120px);
+}
