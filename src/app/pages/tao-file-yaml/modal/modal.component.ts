@@ -206,6 +206,16 @@ export class ModalComponent implements OnInit {
 
     selectedProperties.forEach(key => {
 
+      const value = formData[key];
+
+      if (
+        value === null ||
+        value === undefined ||
+        (typeof value === 'string' && value.trim() === '')
+      ) {
+        return;
+      }
+
       const keys = key.split('.');
 
       let current = result;
@@ -214,7 +224,7 @@ export class ModalComponent implements OnInit {
 
         if (index === keys.length - 1) {
 
-          current[part] = formData[key];
+          current[part] = value;
 
         } else {
 
