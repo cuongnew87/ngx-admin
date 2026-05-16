@@ -9,7 +9,7 @@
     <!-- VERSION -->
 
     <div class="form-group">
-      <label class="label">
+      <label class="label" for="helmVersion">
         Chọn helm version
       </label>
 
@@ -32,7 +32,7 @@
     <!-- FILE NAME -->
 
     <div class="form-group">
-      <label class="label">
+      <label class="label" for="fileName">
         Tên file yaml
       </label>
 
@@ -44,62 +44,101 @@
         placeholder="values.yaml">
     </div>
 
+    <div class="form-group">
+      <label class="label" for="selectedResources">
+        Chọn resource
+      </label>
+
+      <nb-select
+        fullWidth
+        multiple
+        [(selected)]="selectedResources">
+
+        <nb-option
+          *ngFor="let resource of templateSchema"
+          [value]="resource.resource">
+
+          {{ resource.resource }}
+
+        </nb-option>
+
+      </nb-select>
+    </div>
+
     <!-- RESOURCES -->
 
     <div
-      *ngFor="let resource of templateSchema"
-      class="resource-section">
+      *ngFor="let resource of templateSchema">
 
-      <nb-card size="small">
+      <ng-container
+        *ngIf="selectedResources.includes(resource.resource)">
 
-        <nb-card-header>
-          {{ resource.resource }}
-        </nb-card-header>
+        <nb-card class="resource-section">
 
-        <nb-card-body>
+          <nb-card-header>
+            {{ resource.resource }}
+          </nb-card-header>
 
-          <div
-            *ngFor="let prop of resource.properties"
-            class="form-group">
+          <nb-card-body>
 
-            <label class="label">
-              {{ prop.label }}
-            </label>
+            <div
+              *ngFor="let prop of resource.properties"
+              class="form-group">
 
-            <!-- STRING -->
+              <label class="label" for="{{ prop.name }}">
+                {{ prop.label }}
+              </label>
 
-            <input
-              *ngIf="prop.type === 'string'"
-              nbInput
-              fullWidth
-              status="primary"
-              [(ngModel)]="formData[prop.name]"
-              [name]="prop.name">
+              <!-- STRING -->
 
-            <!-- NUMBER -->
+              <input
+                *ngIf="prop.type === 'string'"
+                nbInput
+                fullWidth
+                [(ngModel)]="formData[prop.name]"
+                [name]="prop.name">
 
-            <input
-              *ngIf="prop.type === 'number'"
-              nbInput
-              fullWidth
-              type="number"
-              status="info"
-              [(ngModel)]="formData[prop.name]"
-              [name]="prop.name">
+              <!-- NUMBER -->
 
-            <!-- BOOLEAN -->
+              <input
+                *ngIf="prop.type === 'number'"
+                nbInput
+                type="number"
+                fullWidth
+                [(ngModel)]="formData[prop.name]"
+                [name]="prop.name">
 
-            <nb-toggle
-              *ngIf="prop.type === 'boolean'"
-              status="success"
-              [(checked)]="formData[prop.name]">
-            </nb-toggle>
+              <!-- SELECT -->
 
-          </div>
+              <nb-select
+                *ngIf="prop.type === 'select'"
+                fullWidth
+                [(selected)]="formData[prop.name]">
 
-        </nb-card-body>
+                <nb-option
+                  *ngFor="let option of prop.options"
+                  [value]="option">
 
-      </nb-card>
+                  {{ option }}
+
+                </nb-option>
+
+              </nb-select>
+
+              <!-- BOOLEAN -->
+
+              <nb-toggle
+                *ngIf="prop.type === 'boolean'"
+                [(checked)]="formData[prop.name]">
+              </nb-toggle>
+
+            </div>
+
+          </nb-card-body>
+
+        </nb-card>
+
+      </ng-container>
 
     </div>
 

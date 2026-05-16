@@ -16,6 +16,8 @@ export class ModalComponent implements OnInit {
 
   formData: any = {};
 
+  selectedResources: string[] = [];
+
   fileName = 'values';
 
   constructor(
@@ -137,31 +139,43 @@ export class ModalComponent implements OnInit {
 
     const result: any = {};
 
-    Object.keys(this.formData)
-      .forEach(key => {
+    const selectedProperties: string[] = [];
 
-        const keys = key.split('.');
+    this.templateSchema.forEach(resource => {
 
-        let current = result;
+      if (this.selectedResources.includes(resource.resource)) {
 
-        keys.forEach((part, index) => {
+        resource.properties.forEach((prop: any) => {
 
-          if (index === keys.length - 1) {
+          selectedProperties.push(prop.name);
 
-            current[part] =
-              this.formData[key];
-
-          } else {
-
-            if (!current[part]) {
-
-              current[part] = {};
-            }
-
-            current = current[part];
-          }
         });
+      }
+    });
+
+    selectedProperties.forEach(key => {
+
+      const keys = key.split('.');
+
+      let current = result;
+
+      keys.forEach((part, index) => {
+
+        if (index === keys.length - 1) {
+
+          current[part] = this.formData[key];
+
+        } else {
+
+          if (!current[part]) {
+
+            current[part] = {};
+          }
+
+          current = current[part];
+        }
       });
+    });
 
     return result;
   }
