@@ -390,4 +390,42 @@ export class ModalComponent implements OnInit {
       );
     });
   }
+
+  // logic xử lý duplicate form
+  duplicateFile(index: number): void {
+
+    const sourceFile =
+      this.yamlFiles[index];
+
+    const clonedFile =
+      JSON.parse(JSON.stringify(sourceFile));
+
+    clonedFile.fileName =
+      clonedFile.fileName + '-copy';
+
+    this.yamlFiles.splice(
+      index + 1,
+      0,
+      clonedFile
+    );
+
+    this.selectedTabIndex =
+      index + 1;
+
+    this.saveDraft();
+  }
+
+  onDuplicateClick(
+    event: Event,
+    index: number
+  ): void {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    (event.currentTarget as HTMLElement)?.blur();
+
+    this.duplicateFile(index);
+  }
 }

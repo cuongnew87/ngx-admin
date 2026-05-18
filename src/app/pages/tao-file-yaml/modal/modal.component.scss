@@ -93,3 +93,22 @@
 .remove-array-btn {
   margin-top: 0.5rem;
 }
+
+.tab-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tab-action-btn {
+  padding: 0.2rem !important;
+  min-width: auto !important;
+
+  transition:
+  transform 0.15s ease,
+  opacity 0.15s ease;
+}
+
+.tab-action-btn:hover {
+  transform: scale(1.1);
+}

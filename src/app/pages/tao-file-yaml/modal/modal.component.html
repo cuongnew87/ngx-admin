@@ -53,19 +53,45 @@
               {{ file.fileName || ('File ' + (i + 1)) }}.yaml
             </span>
 
-            <button
-              *ngIf="yamlFiles.length > 1"
-              nbButton
-              ghost
-              status="danger"
-              size="tiny"
-              type="button"
-              class="tab-close-btn"
-              (click)="removeFile(i); $event.preventDefault(); $event.stopPropagation()">
+            <div class="tab-actions">
 
-              <nb-icon icon="close-outline"></nb-icon>
+                <!-- DUPLICATE -->
 
-            </button>
+                <button
+                  nbButton
+                  ghost
+                  status="info"
+                  size="tiny"
+                  type="button"
+                  class="tab-action-btn"
+                  nbTooltip="Copy file"
+                  nbTooltipStatus="info"
+                  nbTooltipPlacement="top"
+                  (click)="onDuplicateClick($event, i)">
+
+                  <nb-icon icon="copy-outline"></nb-icon>
+
+                </button>
+
+              <!-- REMOVE -->
+
+              <button
+                *ngIf="yamlFiles.length > 1"
+                nbButton
+                ghost
+                status="danger"
+                size="tiny"
+                type="button"
+                class="tab-close-btn"
+                nbTooltip="Xóa file"
+                nbTooltipStatus="danger"
+                nbTooltipPlacement="top"
+                (click)="removeFile(i); $event.preventDefault(); $event.stopPropagation()">
+
+                <nb-icon icon="close-outline"></nb-icon>
+
+              </button>
+            </div>
 
           </div>
 
