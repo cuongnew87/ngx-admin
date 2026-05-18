@@ -29,8 +29,6 @@ export class ModalComponent implements OnInit {
 
     this.loadHelmVersions();
 
-    this.addFile();
-
     this.loadDraft();
   }
 
@@ -49,13 +47,9 @@ export class ModalComponent implements OnInit {
             if (!this.selectedVersion) {
 
               this.selectedVersion = data[0];
-
-              this.onVersionChange();
-
-            } else {
-
-              this.onVersionChange();
             }
+
+            this.onVersionChange();
 
             if (this.yamlFiles.length === 0) {
 
@@ -84,14 +78,14 @@ export class ModalComponent implements OnInit {
           this.syncSelectedResources();
           setTimeout(() => {
 
-          this.yamlFiles.forEach(file => {
+            this.yamlFiles.forEach(file => {
 
-            file.selectedResources = [
-                ...file.selectedResources
-              ];
+              file.selectedResources = [
+                  ...file.selectedResources
+                ];
+              });
+
             });
-
-          });
 
         },
 
@@ -555,5 +549,30 @@ export class ModalComponent implements OnInit {
       [...new Set(resources)];
 
     this.saveDraft();
+  }
+
+  resetForm(): void {
+
+    const confirmed = confirm(
+      'Bạn có chắc muốn reset toàn bộ dữ liệu?'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.clearDraft();
+
+    this.selectedTabIndex = 0;
+
+    this.yamlFiles = [];
+
+    if (this.helmVersions.length > 0) {
+
+      this.selectedVersion =
+        this.helmVersions[0];
+
+      this.onVersionChange();
+    }
   }
 }
