@@ -18,6 +18,8 @@ export class ModalComponent implements OnInit {
 
   selectedTabIndex = 0;
 
+  private readonly CACHE_KEY = 'yaml-generator-draft';
+
   constructor(
     public windowRef: NbWindowRef,
     private templateService: TemplateService
@@ -28,6 +30,8 @@ export class ModalComponent implements OnInit {
     this.loadHelmVersions();
 
     this.addFile();
+
+    this.loadDraft();
   }
 
   loadHelmVersions(): void {
@@ -42,9 +46,21 @@ export class ModalComponent implements OnInit {
 
           if (data.length > 0) {
 
-            this.selectedVersion = data[0];
+            if (!this.selectedVersion) {
 
-            this.onVersionChange();
+              this.selectedVersion = data[0];
+
+              this.onVersionChange();
+
+            } else {
+
+              this.onVersionChange();
+            }
+
+            if (this.yamlFiles.length === 0) {
+
+              this.addFile();
+            }
           }
         },
 
@@ -118,6 +134,13 @@ export class ModalComponent implements OnInit {
   }
 
   initializeFileData(file: any): void {
+
+    if (
+      file.formData &&
+      Object.keys(file.formData).length > 0
+    ) {
+      return;
+    }
 
     file.formData = {};
 
@@ -254,5 +277,56 @@ export class ModalComponent implements OnInit {
 
     this.windowRef.close();
 
+  }
+
+  saveDraft(): void {
+    const draft = {
+
+      selectedVersion: this.selectedVersion,
+
+      yamlFiles: this.yamlFiles
+
+    };
+
+    localStorage.setItem(
+      this.CACHE_KEY,
+      JSON.stringify(draft)
+    );
+  }
+
+  loadDraft(): void {
+    const cache =
+      localStorage.getItem(this.CACHE_KEY);
+
+    if (!cache) {
+      return;
+    }
+
+    try {
+
+      const draft = JSON.parse(cache);
+
+      this.selectedVersion =
+        draft.selectedVersion;
+
+      this.yamlFiles =
+        draft.yamlFiles || [];
+
+      if (this.selectedVersion) {
+
+        this.onVersionChange();
+      }
+
+    } catch (e) {
+
+      console.error('Load draft failed', e);
+
+    }
+  }
+
+  clearDraft(): void {
+    localStorage.removeItem(
+      this.CACHE_KEY
+    );
   }
 }

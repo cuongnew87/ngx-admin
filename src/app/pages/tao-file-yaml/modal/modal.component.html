@@ -84,7 +84,8 @@
             fullWidth
             [(ngModel)]="file.fileName"
             [name]="'fileName-' + i"
-            placeholder="values.yaml">
+            placeholder="values.yaml"
+            (ngModelChange)="saveDraft()">
 
         </div>
 
@@ -99,7 +100,8 @@
           <nb-select
             fullWidth
             multiple
-            [(selected)]="file.selectedResources">
+            [(selected)]="file.selectedResources"
+            (selectedChange)="saveDraft()">
 
             <nb-option
               *ngFor="let resource of templateSchema"
@@ -144,7 +146,8 @@
                     nbInput
                     fullWidth
                     [(ngModel)]="file.formData[prop.name]"
-                    [name]="prop.name + '-' + i">
+                    [name]="prop.name + '-' + i"
+                    (ngModelChange)="saveDraft()">
 
                   <!-- NUMBER -->
 
@@ -154,14 +157,16 @@
                     type="number"
                     fullWidth
                     [(ngModel)]="file.formData[prop.name]"
-                    [name]="prop.name + '-' + i">
+                    [name]="prop.name + '-' + i"
+                    (ngModelChange)="saveDraft()">
 
                   <!-- SELECT -->
 
                   <nb-select
                     *ngIf="prop.type === 'select'"
                     fullWidth
-                    [(selected)]="file.formData[prop.name]">
+                    [(selected)]="file.formData[prop.name]"
+                    (selectedChange)="saveDraft()">
 
                     <nb-option
                       *ngFor="let option of prop.options"
@@ -177,7 +182,8 @@
 
                   <nb-toggle
                     *ngIf="prop.type === 'boolean'"
-                    [(checked)]="file.formData[prop.name]">
+                    [(checked)]="file.formData[prop.name]"
+                    (checkedChange)="saveDraft()">
                   </nb-toggle>
 
                 </div>
