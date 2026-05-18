@@ -282,6 +282,7 @@
                       </nb-toggle>
 
                       <!-- ARRAY OBJECT -->
+
                       <div
                         *ngIf="prop.type === 'array-object'"
                         class="array-object-section">
@@ -297,19 +298,38 @@
 
                             <nb-card-body>
 
-                              <!-- NAME -->
+                              <div
+                                *ngFor="
+                                  let childProp of getArrayObjectChildren(
+                                    prop,
+                                    resource.properties
+                                  )
+                                "
+                                class="form-group">
 
-                              <div class="form-group">
+                                <label class="label">
 
-                                <label class="label" [for]="prop.name + '-name-' + arrIndex">
-                                  Name
+                                  {{ childProp.label }}
+
                                 </label>
 
+                                <!-- STRING -->
+
                                 <input
+                                  *ngIf="childProp.type === 'string'"
                                   nbInput
                                   fullWidth
-                                  [(ngModel)]="item.name"
-                                  [name]="prop.name + '-name-' + arrIndex"
+                                  [(ngModel)]="
+                                    item[
+                                      getArrayObjectFieldName(
+                                        prop,
+                                        childProp
+                                      )
+                                    ]
+                                  "
+                                  [name]="
+                                    childProp.name + '-' + arrIndex
+                                  "
                                   (ngModelChange)="saveDraft()">
 
                               </div>
@@ -317,6 +337,8 @@
                             </nb-card-body>
 
                           </nb-card>
+
+                          <!-- REMOVE -->
 
                           <button
                             nbButton
@@ -336,6 +358,8 @@
 
                         </div>
 
+                        <!-- ADD -->
+
                         <button
                           nbButton
                           size="small"
@@ -344,7 +368,8 @@
                           type="button"
                           (click)="addArrayObjectItem(
                             file,
-                            prop.name
+                            prop,
+                            resource.properties
                           )">
 
                           Thêm item

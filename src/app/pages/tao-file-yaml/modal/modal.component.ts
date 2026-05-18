@@ -186,18 +186,7 @@ export class ModalComponent implements OnInit {
 
             case 'array-object':
 
-              const childProp =
-                resource.properties.find(
-                  (p: any) =>
-                    p.name.startsWith(prop.name + '.')
-                );
-
-              file.formData[prop.name] = [
-                {
-                  name:
-                    childProp?.defaultValue || ''
-                }
-              ];
+              file.formData[prop.name] = [];
 
               break;
 
@@ -366,17 +355,33 @@ export class ModalComponent implements OnInit {
   // xử lý logic thêm/xóa item trong mảng (array object) của formData
   addArrayObjectItem(
     file: any,
-    propName: string
+    prop: any,
+    properties: any[]
   ): void {
 
-    if (!file.formData[propName]) {
+    if (!file.formData[prop.name]) {
 
-      file.formData[propName] = [];
+      file.formData[prop.name] = [];
     }
 
-    file.formData[propName].push({
-      name: ''
+    const item: any = {};
+
+    this.getArrayObjectChildren(
+      prop,
+      properties
+    ).forEach((childProp: any) => {
+
+      const fieldName =
+        this.getArrayObjectFieldName(
+          prop,
+          childProp
+        );
+
+      item[fieldName] =
+        childProp.defaultValue || '';
     });
+
+    file.formData[prop.name].push(item);
 
     this.saveDraft();
   }
@@ -486,5 +491,30 @@ export class ModalComponent implements OnInit {
     file.formData[prop.name + '_unit'] = '';
 
     this.onUnitValueChange(file, prop);
+  }
+
+  getArrayObjectChildren(
+    prop: any,
+    properties: any[]
+  ): any[] {
+
+    return properties.filter((p: any) => {
+
+      return (
+        p.name.startsWith(prop.name + '.') &&
+        p.name !== prop.name
+      );
+    });
+  }
+
+  getArrayObjectFieldName(
+    parentProp: any,
+    childProp: any
+  ): string {
+
+    return childProp.name.replace(
+      parentProp.name + '.',
+      ''
+    );
   }
 }
