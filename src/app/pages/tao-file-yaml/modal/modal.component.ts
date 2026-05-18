@@ -169,6 +169,23 @@ export class ModalComponent implements OnInit {
 
               break;
 
+            case 'array-object':
+
+              const childProp =
+                resource.properties.find(
+                  (p: any) =>
+                    p.name.startsWith(prop.name + '.')
+                );
+
+              file.formData[prop.name] = [
+                {
+                  name:
+                    childProp?.defaultValue || ''
+                }
+              ];
+
+              break;
+
             default:
 
               file.formData[prop.name] = '';
@@ -294,6 +311,7 @@ export class ModalComponent implements OnInit {
     );
   }
 
+  // xử lý logic load và clear cache từ localStorage
   loadDraft(): void {
     const cache =
       localStorage.getItem(this.CACHE_KEY);
@@ -328,5 +346,48 @@ export class ModalComponent implements OnInit {
     localStorage.removeItem(
       this.CACHE_KEY
     );
+  }
+
+  // xử lý logic thêm/xóa item trong mảng (array object) của formData
+  addArrayObjectItem(
+    file: any,
+    propName: string
+  ): void {
+
+    if (!file.formData[propName]) {
+
+      file.formData[propName] = [];
+    }
+
+    file.formData[propName].push({
+      name: ''
+    });
+
+    this.saveDraft();
+  }
+
+  removeArrayObjectItem(
+    file: any,
+    propName: string,
+    index: number
+  ): void {
+
+    file.formData[propName].splice(index, 1);
+
+    this.saveDraft();
+  }
+
+  isChildOfArrayObject(
+    prop: any,
+    properties: any[]
+  ): boolean {
+
+    return properties.some((p: any) => {
+
+      return (
+        p.type === 'array-object' &&
+        prop.name.startsWith(p.name + '.')
+      );
+    });
   }
 }

@@ -134,58 +134,135 @@
                 <div
                   *ngFor="let prop of resource.properties"
                   class="form-group">
+                    <ng-container
+                      *ngIf="!isChildOfArrayObject(
+                        prop,
+                        resource.properties
+                      )">
 
-                  <label class="label" [for]="prop.name + '-' + i">
-                    {{ prop.label }}
-                  </label>
+                      <label class="label" [for]="prop.name + '-' + i">
+                        {{ prop.label }}
+                      </label>
 
-                  <!-- STRING -->
+                      <!-- STRING -->
 
-                  <input
-                    *ngIf="prop.type === 'string'"
-                    nbInput
-                    fullWidth
-                    [(ngModel)]="file.formData[prop.name]"
-                    [name]="prop.name + '-' + i"
-                    (ngModelChange)="saveDraft()">
+                      <input
+                        *ngIf="prop.type === 'string'"
+                        nbInput
+                        fullWidth
+                        [(ngModel)]="file.formData[prop.name]"
+                        [name]="prop.name + '-' + i"
+                        (ngModelChange)="saveDraft()">
 
-                  <!-- NUMBER -->
+                      <!-- NUMBER -->
 
-                  <input
-                    *ngIf="prop.type === 'number'"
-                    nbInput
-                    type="number"
-                    fullWidth
-                    [(ngModel)]="file.formData[prop.name]"
-                    [name]="prop.name + '-' + i"
-                    (ngModelChange)="saveDraft()">
+                      <input
+                        *ngIf="prop.type === 'number'"
+                        nbInput
+                        type="number"
+                        fullWidth
+                        [(ngModel)]="file.formData[prop.name]"
+                        [name]="prop.name + '-' + i"
+                        (ngModelChange)="saveDraft()">
 
-                  <!-- SELECT -->
+                      <!-- SELECT -->
 
-                  <nb-select
-                    *ngIf="prop.type === 'select'"
-                    fullWidth
-                    [(selected)]="file.formData[prop.name]"
-                    (selectedChange)="saveDraft()">
+                      <nb-select
+                        *ngIf="prop.type === 'select'"
+                        fullWidth
+                        [(selected)]="file.formData[prop.name]"
+                        (selectedChange)="saveDraft()">
 
-                    <nb-option
-                      *ngFor="let option of prop.options"
-                      [value]="option">
+                        <nb-option
+                          *ngFor="let option of prop.options"
+                          [value]="option">
 
-                      {{ option }}
+                          {{ option }}
 
-                    </nb-option>
+                        </nb-option>
 
-                  </nb-select>
+                      </nb-select>
 
-                  <!-- BOOLEAN -->
+                      <!-- BOOLEAN -->
 
-                  <nb-toggle
-                    *ngIf="prop.type === 'boolean'"
-                    [(checked)]="file.formData[prop.name]"
-                    (checkedChange)="saveDraft()">
-                  </nb-toggle>
+                      <nb-toggle
+                        *ngIf="prop.type === 'boolean'"
+                        [(checked)]="file.formData[prop.name]"
+                        (checkedChange)="saveDraft()">
+                      </nb-toggle>
 
+                      <!-- ARRAY OBJECT -->
+                      <div
+                        *ngIf="prop.type === 'array-object'"
+                        class="array-object-section">
+
+                        <div
+                          *ngFor="
+                            let item of file.formData[prop.name];
+                            let arrIndex = index
+                          "
+                          class="array-object-item">
+
+                          <nb-card>
+
+                            <nb-card-body>
+
+                              <!-- NAME -->
+
+                              <div class="form-group">
+
+                                <label class="label" [for]="prop.name + '-name-' + arrIndex">
+                                  Name
+                                </label>
+
+                                <input
+                                  nbInput
+                                  fullWidth
+                                  [(ngModel)]="item.name"
+                                  [name]="prop.name + '-name-' + arrIndex"
+                                  (ngModelChange)="saveDraft()">
+
+                              </div>
+
+                            </nb-card-body>
+
+                          </nb-card>
+
+                          <button
+                            nbButton
+                            ghost
+                            status="danger"
+                            type="button"
+                            class="remove-array-btn"
+                            (click)="removeArrayObjectItem(
+                              file,
+                              prop.name,
+                              arrIndex
+                            )">
+
+                            <nb-icon icon="trash-2-outline"></nb-icon>
+
+                          </button>
+
+                        </div>
+
+                        <button
+                          nbButton
+                          size="small"
+                          status="info"
+                          appearance="outline"
+                          type="button"
+                          (click)="addArrayObjectItem(
+                            file,
+                            prop.name
+                          )">
+
+                          Thêm item
+
+                        </button>
+
+                      </div>
+                    </ng-container>
                 </div>
 
               </nb-card-body>
