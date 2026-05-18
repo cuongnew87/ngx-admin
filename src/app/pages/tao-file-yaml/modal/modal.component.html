@@ -127,7 +127,7 @@
             fullWidth
             multiple
             [(selected)]="file.selectedResources"
-            (selectedChange)="saveDraft()">
+            (selectedChange)="onResourcesChange(file, $event)">
 
             <nb-option
               *ngFor="let resource of templateSchema"

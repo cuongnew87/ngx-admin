@@ -81,8 +81,17 @@ export class ModalComponent implements OnInit {
         next: (data) => {
 
           this.templateSchema = JSON.parse(data);
+          this.syncSelectedResources();
+          setTimeout(() => {
 
-          this.initializeAllFiles();
+          this.yamlFiles.forEach(file => {
+
+            file.selectedResources = [
+                ...file.selectedResources
+              ];
+            });
+
+          });
 
         },
 
@@ -516,5 +525,35 @@ export class ModalComponent implements OnInit {
       parentProp.name + '.',
       ''
     );
+  }
+
+  syncSelectedResources(): void {
+
+    const validResources =
+      this.templateSchema.map(
+        (r: any) => r.resource
+      );
+
+    this.yamlFiles.forEach(file => {
+
+      file.selectedResources =
+        [...new Set(
+          (file.selectedResources || [])
+            .filter((r: string) =>
+              validResources.includes(r)
+            )
+        )];
+    });
+  }
+
+  onResourcesChange(
+    file: any,
+    resources: string[]
+  ): void {
+
+    file.selectedResources =
+      [...new Set(resources)];
+
+    this.saveDraft();
   }
 }
