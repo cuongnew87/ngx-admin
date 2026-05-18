@@ -182,14 +182,78 @@
 
                       <!-- NUMBER -->
 
-                      <input
-                        *ngIf="prop.type === 'number'"
-                        nbInput
-                        type="number"
-                        fullWidth
-                        [(ngModel)]="file.formData[prop.name]"
-                        [name]="prop.name + '-' + i"
-                        (ngModelChange)="saveDraft()">
+                      <ng-container *ngIf="prop.type === 'number'">
+
+                        <!-- NUMBER WITH UNIT -->
+
+                        <div
+                          *ngIf="prop.unit?.length"
+                          class="resource-input-group">
+
+                          <!-- VALUE -->
+
+                          <input
+                            nbInput
+                            type="number"
+                            placeholder="Value"
+                            class="resource-value-input"
+                            [(ngModel)]="file.formData[prop.name + '_value']"
+                            [name]="prop.name + '_value_' + i"
+                            (ngModelChange)="onUnitValueChange(file, prop)">
+
+                          <!-- UNIT -->
+
+                          <div class="unit-select-wrapper">
+
+                            <nb-select
+                              class="resource-unit-select"
+                              [(selected)]="file.formData[prop.name + '_unit']"
+                              (selectedChange)="onUnitValueChange(file, prop)">
+
+                              <nb-option
+                                *ngFor="let unit of prop.unit"
+                                [value]="unit">
+
+                                {{ unit || '' }}
+
+                              </nb-option>
+
+                            </nb-select>
+
+                            <!-- CLEAR -->
+
+                            <button
+                              *ngIf="file.formData[prop.name + '_unit']"
+                              nbButton
+                              ghost
+                              size="tiny"
+                              status="basic"
+                              type="button"
+                              class="clear-unit-btn"
+                              nbTooltip="Xóa đơn vị"
+                              nbTooltipPlacement="top"
+                              (click)="clearUnit(file, prop, $event)">
+
+                              <nb-icon icon="close-outline"></nb-icon>
+
+                            </button>
+
+                          </div>
+
+                        </div>
+
+                        <!-- NORMAL NUMBER -->
+
+                        <input
+                          *ngIf="!prop.unit?.length"
+                          nbInput
+                          type="number"
+                          fullWidth
+                          [(ngModel)]="file.formData[prop.name]"
+                          [name]="prop.name + '-' + i"
+                          (ngModelChange)="saveDraft()">
+
+                      </ng-container>
 
                       <!-- SELECT -->
 

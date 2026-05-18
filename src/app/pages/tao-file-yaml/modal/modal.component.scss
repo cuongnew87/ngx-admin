@@ -112,3 +112,27 @@
 .tab-action-btn:hover {
   transform: scale(1.1);
 }
+
+.resource-input-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.resource-value-input {
+  flex: 1;
+}
+
+.resource-unit-select {
+  width: 120px;
+}
+
+.unit-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.clear-unit-btn {
+  padding: 0.2rem !important;
+  min-width: auto !important;
+}

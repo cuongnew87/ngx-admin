@@ -159,7 +159,22 @@ export class ModalComponent implements OnInit {
 
             case 'number':
 
-              file.formData[prop.name] = 0;
+              if (prop.unit?.length) {
+
+                file.formData[prop.name + '_value'] =
+                  prop.defaultValue || 0;
+
+                file.formData[prop.name + '_unit'] =
+                  prop.defaultValueUnit || '';
+
+                file.formData[prop.name] =
+                  `${file.formData[prop.name + '_value']}${file.formData[prop.name + '_unit']}`;
+
+              } else {
+
+                file.formData[prop.name] =
+                  Number(prop.defaultValue || 0);
+              }
 
               break;
 
@@ -427,5 +442,49 @@ export class ModalComponent implements OnInit {
     (event.currentTarget as HTMLElement)?.blur();
 
     this.duplicateFile(index);
+  }
+
+  // logic xử lý input có unit (ví dụ: CPU, Memory)
+  onUnitValueChange(
+    file: any,
+    prop: any
+  ): void {
+
+    const value =
+      file.formData[prop.name + '_value'];
+
+    const unit =
+      file.formData[prop.name + '_unit'] || '';
+
+    if (
+      value === null ||
+      value === undefined ||
+      value === ''
+    ) {
+
+      file.formData[prop.name] = '';
+
+    } else {
+
+      file.formData[prop.name] =
+        `${value}${unit}`;
+    }
+
+    this.saveDraft();
+  }
+
+  clearUnit(
+    file: any,
+    prop: any,
+    event: Event
+  ): void {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    file.formData[prop.name + '_unit'] = '';
+
+    this.onUnitValueChange(file, prop);
   }
 }
