@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { NbWindowRef } from '@nebular/theme';
+import { NbDialogService, NbWindowRef } from '@nebular/theme';
 import { TemplateService } from '../../../service/template.service';
+import { ConfirmPopupComponent } from '../confirm-popup/confirm-popup.component';
 
 @Component({
   templateUrl: './modal.component.html',
@@ -22,7 +23,8 @@ export class ModalComponent implements OnInit {
 
   constructor(
     public windowRef: NbWindowRef,
-    private templateService: TemplateService
+    private templateService: TemplateService,
+    private dialogService: NbDialogService
   ) {}
 
   ngOnInit(): void {
@@ -151,52 +153,46 @@ export class ModalComponent implements OnInit {
 
       resource.properties.forEach((prop: any) => {
 
-        if (prop.defaultValue !== undefined) {
+        switch (prop.type) {
 
-          file.formData[prop.name] =
-            prop.defaultValue;
+          case 'number':
 
-        } else {
+            if (prop.unit?.length) {
 
-          switch (prop.type) {
+              file.formData[prop.name + '_value'] =
+                prop.defaultValue || '';
 
-            case 'number':
+              file.formData[prop.name + '_unit'] =
+                prop.defaultValueUnit || '';
 
-              if (prop.unit?.length) {
+              file.formData[prop.name] =
+                `${prop.defaultValue || ''}${prop.defaultValueUnit || ''}`;
 
-                file.formData[prop.name + '_value'] =
-                  prop.defaultValue || 0;
+            } else {
 
-                file.formData[prop.name + '_unit'] =
-                  prop.defaultValueUnit || '';
+              file.formData[prop.name] =
+                Number(prop.defaultValue || 0);
+            }
 
-                file.formData[prop.name] =
-                  `${file.formData[prop.name + '_value']}${file.formData[prop.name + '_unit']}`;
+            break;
 
-              } else {
+          case 'boolean':
 
-                file.formData[prop.name] =
-                  Number(prop.defaultValue || 0);
-              }
+            file.formData[prop.name] =
+              prop.defaultValue ?? false;
 
-              break;
+            break;
 
-            case 'boolean':
+          case 'array-object':
 
-              file.formData[prop.name] = false;
+            file.formData[prop.name] = [];
 
-              break;
+            break;
 
-            case 'array-object':
+          default:
 
-              file.formData[prop.name] = [];
-
-              break;
-
-            default:
-
-              file.formData[prop.name] = '';
-          }
+            file.formData[prop.name] =
+              prop.defaultValue || '';
         }
       });
     });
@@ -553,26 +549,28 @@ export class ModalComponent implements OnInit {
 
   resetForm(): void {
 
-    const confirmed = confirm(
-      'Bạn có chắc muốn reset toàn bộ dữ liệu?'
-    );
+    this.dialogService
+      .open(ConfirmPopupComponent)
+      .onClose
+      .subscribe((confirmed: boolean) => {
 
-    if (!confirmed) {
-      return;
-    }
+        if (!confirmed) {
+          return;
+        }
 
-    this.clearDraft();
+        this.clearDraft();
 
-    this.selectedTabIndex = 0;
+        this.selectedTabIndex = 0;
 
-    this.yamlFiles = [];
+        this.yamlFiles = [];
 
-    if (this.helmVersions.length > 0) {
+        if (this.helmVersions.length > 0) {
 
-      this.selectedVersion =
-        this.helmVersions[0];
+          this.selectedVersion =
+            this.helmVersions[0];
 
-      this.onVersionChange();
-    }
+          this.onVersionChange();
+        }
+      });
   }
 }
