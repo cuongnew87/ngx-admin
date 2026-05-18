@@ -62,3 +62,14 @@
   align-items: center;
   gap: 0.5rem;
 }
+
+.tab-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tab-close-btn {
+  padding: 0.2rem !important;
+  min-width: auto !important;
+}

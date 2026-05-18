@@ -16,6 +16,8 @@ export class ModalComponent implements OnInit {
 
   yamlFiles: any[] = [];
 
+  selectedTabIndex = 0;
+
   constructor(
     public windowRef: NbWindowRef,
     private templateService: TemplateService
@@ -91,11 +93,18 @@ export class ModalComponent implements OnInit {
     this.initializeFileData(
       this.yamlFiles[this.yamlFiles.length - 1]
     );
+
+    this.selectedTabIndex = this.yamlFiles.length - 1;
   }
 
   removeFile(index: number): void {
 
     this.yamlFiles.splice(index, 1);
+
+    if (this.selectedTabIndex >= this.yamlFiles.length) {
+      this.selectedTabIndex =
+        this.yamlFiles.length - 1;
+    }
 
   }
 

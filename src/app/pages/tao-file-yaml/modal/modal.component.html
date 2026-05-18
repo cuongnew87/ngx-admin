@@ -1,16 +1,20 @@
 <nb-card>
 
+  <!-- HEADER -->
+
   <nb-card-header>
     Tạo file YAML
   </nb-card-header>
 
+  <!-- BODY -->
+
   <nb-card-body>
 
-    <!-- GLOBAL HELM VERSION -->
+    <!-- GLOBAL VERSION -->
 
     <div class="form-group">
 
-      <label class="label" for="helmVersion">
+      <label class="label">
         Chọn helm version
       </label>
 
@@ -31,178 +35,168 @@
 
     </div>
 
+    <!-- TABSET -->
+
+    <nb-tabset fullWidth>
+
+      <nb-tab
+        *ngFor="let file of yamlFiles; let i = index"
+        [active]="selectedTabIndex === i">
+
+        <!-- TAB TITLE -->
+
+        <ng-template nbTabTitle>
+
+          <div class="tab-title">
+
+            <span>
+              {{ file.fileName || ('File ' + (i + 1)) }}
+            </span>
+
+            <button
+              *ngIf="yamlFiles.length > 1"
+              nbButton
+              ghost
+              status="danger"
+              size="tiny"
+              type="button"
+              class="tab-close-btn"
+              (click)="removeFile(i); $event.preventDefault(); $event.stopPropagation()">
+
+              <nb-icon icon="close-outline"></nb-icon>
+
+            </button>
+
+          </div>
+
+        </ng-template>
+
+        <!-- FILE NAME -->
+
+        <div class="form-group">
+
+          <label class="label">
+            Tên file yaml
+          </label>
+
+          <input
+            nbInput
+            fullWidth
+            [(ngModel)]="file.fileName"
+            [name]="'fileName-' + i"
+            placeholder="values.yaml">
+
+        </div>
+
+        <!-- RESOURCE -->
+
+        <div class="form-group">
+
+          <label class="label">
+            Chọn resource
+          </label>
+
+          <nb-select
+            fullWidth
+            multiple
+            [(selected)]="file.selectedResources">
+
+            <nb-option
+              *ngFor="let resource of templateSchema"
+              [value]="resource.resource">
+
+              {{ resource.resource }}
+
+            </nb-option>
+
+          </nb-select>
+
+        </div>
+
+        <!-- RESOURCE FORM -->
+
+        <div
+          *ngFor="let resource of templateSchema">
+
+          <ng-container
+            *ngIf="file.selectedResources.includes(resource.resource)">
+
+            <nb-card class="resource-section">
+
+              <nb-card-header>
+                {{ resource.resource }}
+              </nb-card-header>
+
+              <nb-card-body>
+
+                <div
+                  *ngFor="let prop of resource.properties"
+                  class="form-group">
+
+                  <label class="label" [for]="prop.name + '-' + i">
+                    {{ prop.label }}
+                  </label>
+
+                  <!-- STRING -->
+
+                  <input
+                    *ngIf="prop.type === 'string'"
+                    nbInput
+                    fullWidth
+                    [(ngModel)]="file.formData[prop.name]"
+                    [name]="prop.name + '-' + i">
+
+                  <!-- NUMBER -->
+
+                  <input
+                    *ngIf="prop.type === 'number'"
+                    nbInput
+                    type="number"
+                    fullWidth
+                    [(ngModel)]="file.formData[prop.name]"
+                    [name]="prop.name + '-' + i">
+
+                  <!-- SELECT -->
+
+                  <nb-select
+                    *ngIf="prop.type === 'select'"
+                    fullWidth
+                    [(selected)]="file.formData[prop.name]">
+
+                    <nb-option
+                      *ngFor="let option of prop.options"
+                      [value]="option">
+
+                      {{ option }}
+
+                    </nb-option>
+
+                  </nb-select>
+
+                  <!-- BOOLEAN -->
+
+                  <nb-toggle
+                    *ngIf="prop.type === 'boolean'"
+                    [(checked)]="file.formData[prop.name]">
+                  </nb-toggle>
+
+                </div>
+
+              </nb-card-body>
+
+            </nb-card>
+
+          </ng-container>
+
+        </div>
+
+      </nb-tab>
+
+    </nb-tabset>
+
   </nb-card-body>
 
 </nb-card>
-
-<!-- YAML FILES -->
-
-<div
-  *ngFor="let file of yamlFiles; let i = index"
-  class="yaml-file-section">
-
-  <nb-card>
-
-    <!-- HEADER -->
-
-    <nb-card-header class="file-header">
-
-      <div class="header-left">
-
-        <span>
-          File YAML {{ i + 1 }}
-        </span>
-
-      </div>
-
-      <div class="header-right">
-
-        <button
-          *ngIf="yamlFiles.length > 1"
-          nbButton
-          ghost
-          status="danger"
-          size="small"
-          (click)="removeFile(i)">
-
-          <nb-icon icon="close-outline"></nb-icon>
-
-        </button>
-
-      </div>
-
-    </nb-card-header>
-
-    <!-- BODY -->
-
-    <nb-card-body>
-
-      <!-- FILE NAME -->
-
-      <div class="form-group">
-
-        <label class="label" for="fileName-{{ i }}">
-          Tên file yaml
-        </label>
-
-        <input
-          nbInput
-          fullWidth
-          [(ngModel)]="file.fileName"
-          [name]="'fileName-' + i"
-          placeholder="values.yaml">
-
-      </div>
-
-      <!-- RESOURCE SELECT -->
-
-      <div class="form-group">
-
-        <label class="label" for="resourceSelect-{{ i }}">
-          Chọn resource
-        </label>
-
-        <nb-select
-          fullWidth
-          multiple
-          [(selected)]="file.selectedResources">
-
-          <nb-option
-            *ngFor="let resource of templateSchema"
-            [value]="resource.resource">
-
-            {{ resource.resource }}
-
-          </nb-option>
-
-        </nb-select>
-
-      </div>
-
-      <!-- RESOURCE FORM -->
-
-      <div
-        *ngFor="let resource of templateSchema">
-
-        <ng-container
-          *ngIf="file.selectedResources.includes(resource.resource)">
-
-          <nb-card class="resource-section">
-
-            <nb-card-header>
-              {{ resource.resource }}
-            </nb-card-header>
-
-            <nb-card-body>
-
-              <div
-                *ngFor="let prop of resource.properties"
-                class="form-group">
-
-                <label class="label" for="{{ prop.name }}-{{ i }}">
-
-                  {{ prop.label }}
-
-                </label>
-
-                <!-- STRING -->
-
-                <input
-                  *ngIf="prop.type === 'string'"
-                  nbInput
-                  fullWidth
-                  [(ngModel)]="file.formData[prop.name]"
-                  [name]="prop.name + '-' + i">
-
-                <!-- NUMBER -->
-
-                <input
-                  *ngIf="prop.type === 'number'"
-                  nbInput
-                  type="number"
-                  fullWidth
-                  [(ngModel)]="file.formData[prop.name]"
-                  [name]="prop.name + '-' + i">
-
-                <!-- SELECT -->
-
-                <nb-select
-                  *ngIf="prop.type === 'select'"
-                  fullWidth
-                  [(selected)]="file.formData[prop.name]">
-
-                  <nb-option
-                    *ngFor="let option of prop.options"
-                    [value]="option">
-
-                    {{ option }}
-
-                  </nb-option>
-
-                </nb-select>
-
-                <!-- BOOLEAN -->
-
-                <nb-toggle
-                  *ngIf="prop.type === 'boolean'"
-                  [(checked)]="file.formData[prop.name]">
-                </nb-toggle>
-
-              </div>
-
-            </nb-card-body>
-
-          </nb-card>
-
-        </ng-container>
-
-      </div>
-
-    </nb-card-body>
-
-  </nb-card>
-
-</div>
 
 <!-- ACTION -->
 
