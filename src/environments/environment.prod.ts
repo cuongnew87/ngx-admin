@@ -5,5 +5,5 @@
  */
 export const environment = {
   production: false,
-  beUrl: 'https://genyaml-0-0-1-snapshot.onrender.com/api'
+  beUrl: 'http://k8s-tools-be.apps.dc1-preprod.ldapudtest.com/api'
 };
