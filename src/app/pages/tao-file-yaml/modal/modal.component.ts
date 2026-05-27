@@ -727,6 +727,12 @@ export class ModalComponent implements OnInit {
       file.formData['image.tag'] =
         imageInfo.tag;
 
+      file.formData['image.secrets'] = [
+        {
+          name: 'nexus-registry-secret'
+        }
+      ];
+
       // optional service/app name
 
       file.formData['name'] =
