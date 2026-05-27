@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfirmPopupComponent } from './confirm-popup/confirm-popup.component';
 import { QuickGenerateComponent } from './quick-generate/quick-generate.component';
+import { TabFilesComponent } from './tab-files/tab-files.component';
 
 @NgModule({
   imports: [
@@ -29,7 +30,8 @@ import { QuickGenerateComponent } from './quick-generate/quick-generate.componen
     TaoFileYamlComponent,
     ModalComponent,
     ConfirmPopupComponent,
-    QuickGenerateComponent
+    QuickGenerateComponent,
+    TabFilesComponent
   ],
 })
 export class TaoFileYamlModule { }

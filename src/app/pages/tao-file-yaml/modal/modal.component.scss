@@ -1,22 +1,7 @@
 @import '../../../@theme/styles/themes';
 
-@include nb-install-component() {
-  ::ng-deep .form {
-    display: flex;
-    flex-direction: column;
-
-    .text-label {
-      margin-top: 1.5rem;
-    }
-  }
-}
-
 .form-group {
   margin-bottom: 1.5rem;
-}
-
-.resource-section {
-  margin-top: 1.5rem;
 }
 
 .label {
@@ -28,115 +13,21 @@
 .action-section {
   position: sticky;
   bottom: 0;
-
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-
   padding: 1rem 1.5rem;
   margin-top: 1.5rem;
-
   background: #1a2138;
-
   border-top: 1px solid #2e3a59;
-
   z-index: 10;
+
+  button[nbButton] {
+    border: 1px solid rgba(94, 79, 255, 0.45);
+  }
 }
 
-.file-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.tab-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.tab-close-btn {
-  padding: 0.2rem !important;
-  min-width: auto !important;
-}
-
-.array-object-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.array-object-item {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-}
-
-.array-object-item nb-card {
-  flex: 1;
-}
-
-.remove-array-btn {
-  margin-top: 0.5rem;
-}
-
-.tab-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.tab-action-btn {
-  padding: 0.2rem !important;
-  min-width: auto !important;
-
-  transition:
-  transform 0.15s ease,
-  opacity 0.15s ease;
-}
-
-.tab-action-btn:hover {
-  transform: scale(1.1);
-}
-
-.resource-input-group {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.resource-value-input {
-  flex: 1;
-}
-
-.resource-unit-select {
-  width: 120px;
-}
-
-.unit-select-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.clear-unit-btn {
-  padding: 0.2rem !important;
-  min-width: auto !important;
-}
-
+// Giữ lại các class phục vụ cho tính năng Quick Generate nếu component này nằm trong Modal
 .quick-generate-card {
   margin-top: 1rem;
   margin-bottom: 1.5rem;
@@ -147,10 +38,4 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
   margin-bottom: 1rem;
-}
-
-.action-section button[nbButton] {
-
-  border: 1px solid
-    rgba(94, 79, 255, 0.45);
 }

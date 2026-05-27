@@ -1,0 +1,267 @@
+<nb-tabset fullWidth>
+
+    <nb-tab *ngFor="let file of yamlFiles; let i = index" [active]="selectedTabIndex === i">
+
+        <!-- TAB TITLE -->
+
+        <ng-template nbTabTitle>
+
+            <div class="tab-title">
+
+                <span>
+                    {{ file.fileName || ('File ' + (i + 1)) }}.yaml
+                </span>
+
+                <div class="tab-actions">
+
+                    <!-- DUPLICATE -->
+
+                    <button nbButton ghost status="info" size="tiny" type="button" class="tab-action-btn"
+                        nbTooltip="Copy file" nbTooltipStatus="info" nbTooltipPlacement="top"
+                        (click)="onDuplicateClick($event, i)">
+
+                        <nb-icon icon="copy-outline"></nb-icon>
+
+                    </button>
+
+                    <!-- REMOVE -->
+
+                    <button *ngIf="yamlFiles.length > 1" nbButton ghost status="danger" size="tiny" type="button"
+                        class="tab-close-btn" nbTooltip="Xóa file" nbTooltipStatus="danger" nbTooltipPlacement="top"
+                        (click)="removeFile(i); $event.preventDefault(); $event.stopPropagation()">
+
+                        <nb-icon icon="close-outline"></nb-icon>
+
+                    </button>
+                </div>
+
+            </div>
+
+        </ng-template>
+
+        <!-- FILE NAME -->
+
+        <div class="form-group">
+
+            <label class="label" for="fileName-{{ i }}">
+                Tên file yaml
+            </label>
+
+            <input nbInput fullWidth [(ngModel)]="file.fileName" [name]="'fileName-' + i" placeholder="values.yaml"
+                (ngModelChange)="saveDraft()">
+
+        </div>
+
+        <!-- RESOURCE -->
+
+        <div class="form-group">
+
+            <label class="label" for="resources-{{ i }}">
+                Chọn resource
+            </label>
+
+            <nb-select fullWidth multiple [(selected)]="file.selectedResources"
+                (selectedChange)="onResourcesChange(file, $event)">
+
+                <nb-option *ngFor="let resource of templateSchema" [value]="resource.resource">
+
+                    {{ resource.resource }}
+
+                </nb-option>
+
+            </nb-select>
+
+        </div>
+
+        <!-- RESOURCE FORM -->
+
+        <div *ngFor="let resource of templateSchema">
+
+            <ng-container *ngIf="file.selectedResources.includes(resource.resource)">
+
+                <nb-card class="resource-section">
+
+                    <nb-card-header>
+                        {{ resource.resource }}
+                    </nb-card-header>
+
+                    <nb-card-body>
+
+                        <div *ngFor="let prop of resource.properties" class="form-group">
+                            <ng-container *ngIf="!isChildOfArrayObject(
+                        prop,
+                        resource.properties
+                      )">
+
+                                <label class="label" [for]="prop.name + '-' + i">
+                                    {{ prop.label }}
+                                </label>
+
+                                <!-- STRING -->
+
+                                <input *ngIf="prop.type === 'string'" nbInput fullWidth
+                                    [(ngModel)]="file.formData[prop.name]" [name]="prop.name + '-' + i"
+                                    (ngModelChange)="saveDraft()">
+
+                                <!-- NUMBER -->
+
+                                <ng-container *ngIf="prop.type === 'number'">
+
+                                    <!-- NUMBER WITH UNIT -->
+
+                                    <div *ngIf="prop.unit?.length" class="resource-input-group">
+
+                                        <!-- VALUE -->
+
+                                        <input nbInput type="number" placeholder="Value" class="resource-value-input"
+                                            [(ngModel)]="file.formData[prop.name + '_value']"
+                                            [name]="prop.name + '_value_' + i"
+                                            (ngModelChange)="onUnitValueChange(file, prop)">
+
+                                        <!-- UNIT -->
+
+                                        <div class="unit-select-wrapper">
+
+                                            <nb-select class="resource-unit-select"
+                                                [(selected)]="file.formData[prop.name + '_unit']"
+                                                (selectedChange)="onUnitValueChange(file, prop)">
+
+                                                <nb-option *ngFor="let unit of prop.unit" [value]="unit">
+
+                                                    {{ unit || '' }}
+
+                                                </nb-option>
+
+                                            </nb-select>
+
+                                            <!-- CLEAR -->
+
+                                            <button *ngIf="file.formData[prop.name + '_unit']" nbButton ghost
+                                                size="tiny" status="basic" type="button" class="clear-unit-btn"
+                                                nbTooltip="Xóa đơn vị" nbTooltipPlacement="top"
+                                                (click)="clearUnit(file, prop, $event)">
+
+                                                <nb-icon icon="close-outline"></nb-icon>
+
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- NORMAL NUMBER -->
+
+                                    <input *ngIf="!prop.unit?.length" nbInput type="number" fullWidth
+                                        [(ngModel)]="file.formData[prop.name]" [name]="prop.name + '-' + i"
+                                        (ngModelChange)="saveDraft()">
+
+                                </ng-container>
+
+                                <!-- SELECT -->
+
+                                <nb-select *ngIf="prop.type === 'select'" fullWidth
+                                    [(selected)]="file.formData[prop.name]" (selectedChange)="saveDraft()">
+
+                                    <nb-option *ngFor="let option of prop.options" [value]="option">
+
+                                        {{ option }}
+
+                                    </nb-option>
+
+                                </nb-select>
+
+                                <!-- BOOLEAN -->
+
+                                <nb-toggle *ngIf="prop.type === 'boolean'" [(checked)]="file.formData[prop.name]"
+                                    (checkedChange)="saveDraft()">
+                                </nb-toggle>
+
+                                <!-- ARRAY OBJECT -->
+
+                                <div *ngIf="prop.type === 'array-object'" class="array-object-section">
+
+                                    <div *ngFor="
+                            let item of file.formData[prop.name];
+                            let arrIndex = index
+                          " class="array-object-item">
+
+                                        <nb-card>
+
+                                            <nb-card-body>
+
+                                                <div *ngFor="
+                                  let childProp of getArrayObjectChildren(
+                                    prop,
+                                    resource.properties
+                                  )
+                                " class="form-group">
+
+                                                    <label class="label">
+
+                                                        {{ childProp.label }}
+
+                                                    </label>
+
+                                                    <!-- STRING -->
+
+                                                    <input *ngIf="childProp.type === 'string'" nbInput fullWidth
+                                                        [(ngModel)]="
+                                    item[
+                                      getArrayObjectFieldName(
+                                        prop,
+                                        childProp
+                                      )
+                                    ]
+                                  " [name]="
+                                    childProp.name + '-' + arrIndex
+                                  " (ngModelChange)="saveDraft()">
+
+                                                </div>
+
+                                            </nb-card-body>
+
+                                        </nb-card>
+
+                                        <!-- REMOVE -->
+
+                                        <button nbButton ghost status="danger" type="button" class="remove-array-btn"
+                                            (click)="removeArrayObjectItem(
+                              file,
+                              prop.name,
+                              arrIndex
+                            )">
+
+                                            <nb-icon icon="trash-2-outline"></nb-icon>
+
+                                        </button>
+
+                                    </div>
+
+                                    <!-- ADD -->
+
+                                    <button nbButton size="small" status="info" appearance="outline" type="button"
+                                        (click)="addArrayObjectItem(
+                            file,
+                            prop,
+                            resource.properties
+                          )">
+
+                                        Thêm item
+
+                                    </button>
+
+                                </div>
+                            </ng-container>
+                        </div>
+
+                    </nb-card-body>
+
+                </nb-card>
+
+            </ng-container>
+
+        </div>
+
+    </nb-tab>
+
+</nb-tabset>
