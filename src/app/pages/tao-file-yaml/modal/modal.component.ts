@@ -263,8 +263,32 @@ export class ModalComponent implements OnInit {
       if (
         value === null ||
         value === undefined ||
-        (typeof value === 'string' && value.trim() === '')
+        (typeof value === 'string' &&
+          value.trim() === '')
       ) {
+        return;
+      }
+
+      // SPECIAL: extraEnvFrom
+
+      if (key.startsWith('extraEnvFrom.')) {
+
+        const refType =
+          key.split('.')[1];
+
+        if (!result.extraEnvFrom) {
+
+          result.extraEnvFrom = [];
+        }
+
+        result.extraEnvFrom.push({
+
+          [refType]: {
+            name: value
+          }
+
+        });
+
         return;
       }
 
