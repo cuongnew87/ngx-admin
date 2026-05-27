@@ -21,6 +21,22 @@ export class ModalComponent implements OnInit {
 
   private readonly CACHE_KEY = 'yaml-generator-draft';
 
+  quickGenerate = {
+
+    appName: '',
+
+    count: 1,
+
+    services: [
+      {
+        name: '',
+        image: ''
+      }
+    ]
+  };
+
+  showQuickGenerate = false;
+
   constructor(
     public windowRef: NbWindowRef,
     private templateService: TemplateService,
@@ -596,5 +612,265 @@ export class ModalComponent implements OnInit {
           this.onVersionChange();
         }
       });
+  }
+
+  // quick generate logic
+  generateMultipleFiles(): void {
+
+    const count =
+      Number(this.quickGenerate.count || 0);
+
+    if (count <= 0) {
+      return;
+    }
+
+    const appName =
+      this.normalizeName(
+        this.quickGenerate.appName
+      );
+
+    if (!appName) {
+
+      alert('Tên chương trình không hợp lệ');
+
+      return;
+    }
+
+    const services =
+      this.quickGenerate.services || [];
+
+    if (services.length === 0) {
+
+      alert('Vui lòng nhập service');
+
+      return;
+    }
+
+    // clear tab cũ
+
+    this.yamlFiles = [];
+
+    const allResources =
+      this.templateSchema.map(
+        (r: any) => r.resource
+      );
+
+    for (const service of services) {
+
+      // normalize service name
+
+      const serviceName =
+        this.normalizeName(
+          service.name
+        );
+
+      if (!serviceName) {
+        continue;
+      }
+
+      // validate docker image
+
+      const imageInfo =
+        this.parseDockerImage(
+          service.image
+        );
+
+      if (!imageInfo.valid) {
+
+        alert(
+          `Docker image không hợp lệ cho service: ${service.name}`
+        );
+
+        return;
+      }
+
+      const file: any = {
+
+        fileName: serviceName,
+
+        selectedResources: [...allResources],
+
+        formData: {}
+      };
+
+      // init default values
+
+      this.initializeFileData(file);
+
+      // route
+
+      file.formData['route.enabled'] =
+        true;
+
+      file.formData['route.path'] =
+        `/${serviceName}`;
+
+      file.formData['route.host'] =
+        `${appName}.apps.ocpprepro.ldapudtest.com`;
+
+      // ingress
+
+      file.formData['ingress.enabled'] =
+        true;
+
+      file.formData['ingress.path'] =
+        `/${serviceName}`;
+
+      file.formData['ingress.host'] =
+        `${appName}.apps.ocpprepro.ldapudtest.com`;
+
+      // image
+
+      file.formData['image.repository'] =
+        imageInfo.repository;
+
+      file.formData['image.tag'] =
+        imageInfo.tag;
+
+      // optional service/app name
+
+      file.formData['name'] =
+        serviceName;
+
+      this.yamlFiles.push(file);
+    }
+
+    if (this.yamlFiles.length === 0) {
+
+      alert('Không có service hợp lệ');
+
+      return;
+    }
+
+    this.selectedTabIndex = 0;
+
+    this.showQuickGenerate = false;
+
+    this.saveDraft();
+  }
+
+  onQuickGenerateCountChange(): void {
+
+    const count =
+      Number(this.quickGenerate.count || 0);
+
+    while (
+      this.quickGenerate.services.length < count
+    ) {
+
+      this.quickGenerate.services.push({
+
+        name: '',
+
+        image: ''
+      });
+    }
+
+    while (
+      this.quickGenerate.services.length > count
+    ) {
+
+      this.quickGenerate.services.pop();
+    }
+  }
+
+  trackByIndex(
+    index: number,
+    item: any
+  ): number {
+
+    return index;
+  }
+
+  normalizeName(value: string): string {
+
+    return (value || '')
+
+      .toLowerCase()
+
+      // bỏ dấu tiếng Việt
+
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+
+      // ký tự đặc biệt -> -
+
+      .replace(/[^a-z0-9]+/g, '-')
+
+      // xóa - đầu/cuối
+
+      .replace(/^-+|-+$/g, '')
+
+      // tránh ----
+
+      .replace(/-{2,}/g, '-');
+  }
+
+  parseDockerImage(
+    image: string
+  ): any {
+
+    const value =
+      (image || '').trim();
+
+    if (!value) {
+
+      return {
+        valid: false
+      };
+    }
+
+    // lấy dấu : cuối cùng
+    // để support registry:port
+
+    const lastColonIndex =
+      value.lastIndexOf(':');
+
+    if (
+      lastColonIndex <= 0 ||
+      lastColonIndex === value.length - 1
+    ) {
+
+      return {
+        valid: false
+      };
+    }
+
+    const repository =
+      value.substring(0, lastColonIndex);
+
+    const tag =
+      value.substring(lastColonIndex + 1);
+
+    // support:
+    // domain
+    // ip
+    // port
+    // path
+
+    const repositoryRegex =
+      /^[a-zA-Z0-9._:/-]+$/;
+
+    const tagRegex =
+      /^[a-zA-Z0-9._-]+$/;
+
+    if (
+      !repositoryRegex.test(repository) ||
+      !tagRegex.test(tag)
+    ) {
+
+      return {
+        valid: false
+      };
+    }
+
+    return {
+
+      valid: true,
+
+      repository,
+
+      tag
+    };
   }
 }
