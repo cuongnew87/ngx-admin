@@ -25,41 +25,30 @@ export class ModalComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadHelmVersions();
     this.loadDraft();
   }
 
-  loadHelmVersions(): void {
-    this.templateService.getVersions().subscribe({
-      next: (data) => {
-        this.helmVersions = data;
-        if (data.length > 0) {
-          if (!this.selectedVersion) {
-            this.selectedVersion = data[0];
-          }
-          this.onVersionChange();
-          if (this.yamlFiles.length === 0) {
-            this.addFile();
-          }
-        }
-      },
-      error: (err) => console.error(err)
-    });
+  // Callback hứng dữ liệu từ component chọn Version
+  onVersionsLoaded(versions: string[]): void {
+    this.helmVersions = versions;
   }
 
-  onVersionChange(): void {
-    this.templateService.getTemplate(this.selectedVersion).subscribe({
-      next: (data) => {
-        this.templateSchema = JSON.parse(data);
-        this.syncSelectedResources();
-        setTimeout(() => {
-          this.yamlFiles.forEach(file => {
-            file.selectedResources = [...file.selectedResources];
-          });
-        });
-      },
-      error: (err) => console.error(err)
+  // Callback khi schema được load xong xuôi từ component con
+  onSchemaLoaded(schema: any[]): void {
+    this.templateSchema = schema;
+    this.syncSelectedResources();
+    
+    // Đảm bảo dữ liệu form trigger chuẩn xác sau khi schema đổi
+    setTimeout(() => {
+      this.yamlFiles.forEach(file => {
+        file.selectedResources = [...file.selectedResources];
+      });
     });
+
+    // Nếu là lần đầu mở (chưa có file nào), tự động tạo 1 tab mới
+    if (this.yamlFiles.length === 0) {
+      this.addFile();
+    }
   }
 
   addFile(): void {
@@ -68,15 +57,14 @@ export class ModalComponent implements OnInit {
       selectedResources: [],
       formData: {}
     });
+
     this.initializeFileData(this.yamlFiles[this.yamlFiles.length - 1]);
     this.selectedTabIndex = this.yamlFiles.length - 1;
     this.saveDraft();
   }
 
   initializeFileData(file: any): void {
-    if (file.formData && Object.keys(file.formData).length > 0) {
-      return;
-    }
+    if (file.formData && Object.keys(file.formData).length > 0) return;
     file.formData = {};
 
     this.templateSchema.forEach(resource => {
@@ -113,6 +101,7 @@ export class ModalComponent implements OnInit {
     });
   }
 
+  // --- DRAFT & CACHE ---
   saveDraft(): void {
     const draft = {
       selectedVersion: this.selectedVersion,
@@ -128,9 +117,6 @@ export class ModalComponent implements OnInit {
       const draft = JSON.parse(cache);
       this.selectedVersion = draft.selectedVersion;
       this.yamlFiles = draft.yamlFiles || [];
-      if (this.selectedVersion) {
-        this.onVersionChange();
-      }
     } catch (e) {
       console.error('Load draft failed', e);
     }
@@ -146,9 +132,9 @@ export class ModalComponent implements OnInit {
       this.clearDraft();
       this.selectedTabIndex = 0;
       this.yamlFiles = [];
+      
       if (this.helmVersions.length > 0) {
         this.selectedVersion = this.helmVersions[0];
-        this.onVersionChange();
       }
     });
   }
