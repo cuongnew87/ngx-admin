@@ -7,6 +7,7 @@ import { ModalComponent } from './modal/modal.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfirmPopupComponent } from './confirm-popup/confirm-popup.component';
+import { QuickGenerateComponent } from './quick-generate/quick-generate.component';
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import { ConfirmPopupComponent } from './confirm-popup/confirm-popup.component';
   declarations: [
     TaoFileYamlComponent,
     ModalComponent,
-    ConfirmPopupComponent
+    ConfirmPopupComponent,
+    QuickGenerateComponent
   ],
 })
 export class TaoFileYamlModule { }

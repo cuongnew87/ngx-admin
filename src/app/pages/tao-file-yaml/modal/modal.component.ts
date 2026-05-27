@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NbDialogService, NbWindowRef } from '@nebular/theme';
 import { TemplateService } from '../../../service/template.service';
 import { ConfirmPopupComponent } from '../confirm-popup/confirm-popup.component';
+import { normalizeName, parseDockerImage } from '../../../shared/utils/yaml-generator.util';
 
 @Component({
   templateUrl: './modal.component.html',
@@ -19,23 +20,9 @@ export class ModalComponent implements OnInit {
 
   selectedTabIndex = 0;
 
-  private readonly CACHE_KEY = 'yaml-generator-draft';
-
-  quickGenerate = {
-
-    appName: '',
-
-    count: 1,
-
-    services: [
-      {
-        name: '',
-        image: ''
-      }
-    ]
-  };
-
   showQuickGenerate = false;
+
+  private readonly CACHE_KEY = 'yaml-generator-draft';
 
   constructor(
     public windowRef: NbWindowRef,
@@ -614,39 +601,15 @@ export class ModalComponent implements OnInit {
       });
   }
 
-  // quick generate logic
-  generateMultipleFiles(): void {
-
-    const count =
-      Number(this.quickGenerate.count || 0);
-
-    if (count <= 0) {
-      return;
-    }
+  generateMultipleFiles(
+    payload: any
+  ): void {
 
     const appName =
-      this.normalizeName(
-        this.quickGenerate.appName
-      );
-
-    if (!appName) {
-
-      alert('Tên chương trình không hợp lệ');
-
-      return;
-    }
+      payload.appName;
 
     const services =
-      this.quickGenerate.services || [];
-
-    if (services.length === 0) {
-
-      alert('Vui lòng nhập service');
-
-      return;
-    }
-
-    // clear tab cũ
+      payload.services;
 
     this.yamlFiles = [];
 
@@ -657,10 +620,8 @@ export class ModalComponent implements OnInit {
 
     for (const service of services) {
 
-      // normalize service name
-
       const serviceName =
-        this.normalizeName(
+        normalizeName(
           service.name
         );
 
@@ -668,21 +629,10 @@ export class ModalComponent implements OnInit {
         continue;
       }
 
-      // validate docker image
-
       const imageInfo =
-        this.parseDockerImage(
+        parseDockerImage(
           service.image
         );
-
-      if (!imageInfo.valid) {
-
-        alert(
-          `Docker image không hợp lệ cho service: ${service.name}`
-        );
-
-        return;
-      }
 
       const file: any = {
 
@@ -693,11 +643,7 @@ export class ModalComponent implements OnInit {
         formData: {}
       };
 
-      // init default values
-
       this.initializeFileData(file);
-
-      // route
 
       file.formData['route.enabled'] =
         true;
@@ -708,8 +654,6 @@ export class ModalComponent implements OnInit {
       file.formData['route.host'] =
         `${appName}.apps.ocpprepro.ldapudtest.com`;
 
-      // ingress
-
       file.formData['ingress.enabled'] =
         true;
 
@@ -719,8 +663,6 @@ export class ModalComponent implements OnInit {
       file.formData['ingress.host'] =
         `${appName}.apps.ocpprepro.ldapudtest.com`;
 
-      // image
-
       file.formData['image.repository'] =
         imageInfo.repository;
 
@@ -729,11 +671,10 @@ export class ModalComponent implements OnInit {
 
       file.formData['image.secrets'] = [
         {
-          name: 'nexus-registry-secret'
+          name:
+            'nexus-registry-secret'
         }
       ];
-
-      // optional service/app name
 
       file.formData['name'] =
         serviceName;
@@ -741,142 +682,10 @@ export class ModalComponent implements OnInit {
       this.yamlFiles.push(file);
     }
 
-    if (this.yamlFiles.length === 0) {
-
-      alert('Không có service hợp lệ');
-
-      return;
-    }
-
     this.selectedTabIndex = 0;
 
     this.showQuickGenerate = false;
 
     this.saveDraft();
-  }
-
-  onQuickGenerateCountChange(): void {
-
-    const count =
-      Number(this.quickGenerate.count || 0);
-
-    while (
-      this.quickGenerate.services.length < count
-    ) {
-
-      this.quickGenerate.services.push({
-
-        name: '',
-
-        image: ''
-      });
-    }
-
-    while (
-      this.quickGenerate.services.length > count
-    ) {
-
-      this.quickGenerate.services.pop();
-    }
-  }
-
-  trackByIndex(
-    index: number,
-    item: any
-  ): number {
-
-    return index;
-  }
-
-  normalizeName(value: string): string {
-
-    return (value || '')
-
-      .toLowerCase()
-
-      // bỏ dấu tiếng Việt
-
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-
-      // ký tự đặc biệt -> -
-
-      .replace(/[^a-z0-9]+/g, '-')
-
-      // xóa - đầu/cuối
-
-      .replace(/^-+|-+$/g, '')
-
-      // tránh ----
-
-      .replace(/-{2,}/g, '-');
-  }
-
-  parseDockerImage(
-    image: string
-  ): any {
-
-    const value =
-      (image || '').trim();
-
-    if (!value) {
-
-      return {
-        valid: false
-      };
-    }
-
-    // lấy dấu : cuối cùng
-    // để support registry:port
-
-    const lastColonIndex =
-      value.lastIndexOf(':');
-
-    if (
-      lastColonIndex <= 0 ||
-      lastColonIndex === value.length - 1
-    ) {
-
-      return {
-        valid: false
-      };
-    }
-
-    const repository =
-      value.substring(0, lastColonIndex);
-
-    const tag =
-      value.substring(lastColonIndex + 1);
-
-    // support:
-    // domain
-    // ip
-    // port
-    // path
-
-    const repositoryRegex =
-      /^[a-zA-Z0-9._:/-]+$/;
-
-    const tagRegex =
-      /^[a-zA-Z0-9._-]+$/;
-
-    if (
-      !repositoryRegex.test(repository) ||
-      !tagRegex.test(tag)
-    ) {
-
-      return {
-        valid: false
-      };
-    }
-
-    return {
-
-      valid: true,
-
-      repository,
-
-      tag
-    };
   }
 }
