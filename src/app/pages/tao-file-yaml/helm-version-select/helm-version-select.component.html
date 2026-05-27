@@ -1,18 +1,13 @@
 <div class="form-group">
-  <label class="label" for="helmVersion">
-    Chọn helm version
-  </label>
+  <label class="label" for="helmVersion"> Chọn helm version </label>
 
   <nb-select
     fullWidth
     [(selected)]="selectedVersion"
-    (selectedChange)="onVersionChange()">
-
-    <nb-option
-      *ngFor="let version of helmVersions"
-      [value]="version">
+    (selectedChange)="onVersionChange()"
+  >
+    <nb-option *ngFor="let version of helmVersions" [value]="version">
       {{ version }}
     </nb-option>
-
   </nb-select>
 </div>

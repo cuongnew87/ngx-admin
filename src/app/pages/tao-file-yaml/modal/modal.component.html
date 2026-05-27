@@ -1,79 +1,58 @@
 <nb-card>
-
   <!-- HEADER -->
 
-  <nb-card-header>
-    Tạo file YAML
-  </nb-card-header>
+  <nb-card-header> Tạo file YAML </nb-card-header>
 
   <!-- BODY -->
 
   <nb-card-body>
-
     <app-helm-version-select
       [(selectedVersion)]="selectedVersion"
       (versionsLoaded)="onVersionsLoaded($event)"
-      (schemaLoaded)="onSchemaLoaded($event)">
+      (schemaLoaded)="onSchemaLoaded($event)"
+    >
     </app-helm-version-select>
 
     <app-quick-generate
       *ngIf="showQuickGenerate"
       [templateSchema]="templateSchema"
-      (generate)="generateMultipleFiles($event)">
+      (generate)="generateMultipleFiles($event)"
+    >
     </app-quick-generate>
 
-    <ngx-tab-files 
+    <ngx-tab-files
       [templateSchema]="templateSchema"
       [(yamlFiles)]="yamlFiles"
       [(selectedTabIndex)]="selectedTabIndex"
-      (formChanged)="saveDraft()">
+      (formChanged)="saveDraft()"
+    >
     </ngx-tab-files>
-
   </nb-card-body>
-
 </nb-card>
 
 <!-- ACTION -->
 
 <div class="action-section">
-
   <button
     nbButton
     ghost
     status="info"
     type="button"
-    (click)="showQuickGenerate = !showQuickGenerate">
-
+    (click)="showQuickGenerate = !showQuickGenerate"
+  >
     <nb-icon
-      [icon]="showQuickGenerate
-        ? 'chevron-up-outline'
-        : 'flash-outline'">
+      [icon]="showQuickGenerate ? 'chevron-up-outline' : 'flash-outline'"
+    >
     </nb-icon>
 
-    {{ showQuickGenerate
-        ? 'Ẩn tạo nhanh'
-        : 'Gợi ý tạo file' }}
-
+    {{ showQuickGenerate ? "Ẩn tạo nhanh" : "Gợi ý tạo file" }}
   </button>
 
-  <button
-    nbButton
-    status="info"
-    appearance="outline"
-    (click)="addFile()">
-
+  <button nbButton status="info" appearance="outline" (click)="addFile()">
     Thêm file
-
   </button>
 
-  <button
-    nbButton
-    status="success"
-    (click)="exportYaml()">
-
-    Export YAML
-
-  </button>
+  <button nbButton status="success" (click)="exportYaml()">Export YAML</button>
 
   <button
     nbButton
@@ -82,12 +61,10 @@
     type="button"
     nbTooltip="Xóa toàn bộ dữ liệu đã nhập"
     nbTooltipPlacement="top"
-    (click)="resetForm()">
-
+    (click)="resetForm()"
+  >
     <nb-icon icon="refresh-outline"></nb-icon>
 
     Reset
-
   </button>
-
 </div>

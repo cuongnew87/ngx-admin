@@ -1,160 +1,114 @@
-  <nb-card class="quick-generate-card">
+<nb-card class="quick-generate-card">
+  <!-- HEADER -->
 
-    <!-- HEADER -->
+  <nb-card-header class="quick-generate-header">
+    <div>
+      <div class="quick-title">Tạo file nhanh</div>
+    </div>
+  </nb-card-header>
 
-    <nb-card-header class="quick-generate-header">
+  <nb-card-body>
+    <!-- GENERAL -->
 
-      <div>
+    <div class="quick-section">
+      <div class="section-title">Thông tin chung</div>
 
-        <div class="quick-title">
-          Tạo file nhanh
+      <div class="quick-generate-grid">
+        <!-- APP NAME -->
+
+        <div class="form-group">
+          <label class="label"> Tên chương trình </label>
+
+          <input
+            nbInput
+            fullWidth
+            [(ngModel)]="quickGenerate.appName"
+            placeholder="payment-service"
+          />
         </div>
 
+        <!-- COUNT -->
+
+        <div class="form-group">
+          <label class="label"> Số lượng service </label>
+
+          <input
+            nbInput
+            type="number"
+            min="1"
+            fullWidth
+            [(ngModel)]="quickGenerate.count"
+            (ngModelChange)="onQuickGenerateCountChange()"
+          />
+        </div>
       </div>
+    </div>
 
-    </nb-card-header>
+    <!-- SERVICES -->
 
-    <nb-card-body>
+    <div class="quick-section">
+      <div class="section-title">Danh sách service</div>
 
-      <!-- GENERAL -->
-
-      <div class="quick-section">
-
-        <div class="section-title">
-          Thông tin chung
-        </div>
-
-        <div class="quick-generate-grid">
-
-          <!-- APP NAME -->
+      <div class="service-grid">
+        <div
+          *ngFor="
+            let service of quickGenerate.services;
+            let i = index;
+            trackBy: trackByIndex
+          "
+          class="service-item"
+        >
+          <!-- SERVICE NAME -->
 
           <div class="form-group">
-
-            <label class="label">
-              Tên chương trình
-            </label>
+            <label class="label"> Service {{ i + 1 }} </label>
 
             <input
               nbInput
               fullWidth
-              [(ngModel)]="quickGenerate.appName"
-              placeholder="payment-service">
-
+              [name]="'service-name-' + i"
+              [(ngModel)]="service.name"
+              placeholder="user-service"
+            />
           </div>
 
-          <!-- COUNT -->
+          <!-- IMAGE -->
 
           <div class="form-group">
-
-            <label class="label">
-              Số lượng service
-            </label>
+            <label class="label"> Docker image </label>
 
             <input
               nbInput
-              type="number"
-              min="1"
               fullWidth
-              [(ngModel)]="quickGenerate.count"
-              (ngModelChange)="onQuickGenerateCountChange()">
+              [name]="'service-image-' + i"
+              [(ngModel)]="service.image"
+              placeholder="harbor/user-service:v1.0.0"
+            />
 
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- SERVICES -->
-
-      <div class="quick-section">
-
-        <div class="section-title">
-          Danh sách service
-        </div>
-
-        <div class="service-grid">
-
-          <div
-            *ngFor="
-              let service of quickGenerate.services;
-              let i = index;
-              trackBy: trackByIndex
-            "
-            class="service-item">
-
-            <!-- SERVICE NAME -->
-
-            <div class="form-group">
-
-              <label class="label">
-
-                Service {{ i + 1 }}
-
-              </label>
-
-              <input
-                nbInput
-                fullWidth
-                [name]="'service-name-' + i"
-                [(ngModel)]="service.name"
-                placeholder="user-service">
-
+            <div
+              class="input-error"
+              *ngIf="service.image && !parseDockerImage(service.image).valid"
+            >
+              Docker image không hợp lệ
             </div>
-
-            <!-- IMAGE -->
-
-            <div class="form-group">
-
-              <label class="label">
-
-                Docker image
-
-              </label>
-
-              <input
-                nbInput
-                fullWidth
-                [name]="'service-image-' + i"
-                [(ngModel)]="service.image"
-                placeholder="harbor/user-service:v1.0.0">
-
-              <div
-                class="input-error"
-                *ngIf="
-                  service.image &&
-                  !parseDockerImage(service.image).valid
-                ">
-
-                Docker image không hợp lệ
-
-              </div>
-
-            </div>
-
           </div>
-
         </div>
-
       </div>
+    </div>
 
-      <!-- ACTION -->
+    <!-- ACTION -->
 
-      <div class="quick-generate-actions">
+    <div class="quick-generate-actions">
+      <button
+        nbButton
+        status="info"
+        size="medium"
+        (click)="generateMultipleFiles()"
+      >
+        <nb-icon icon="flash-outline"></nb-icon>
 
-        <button
-          nbButton
-          status="info"
-          size="medium"
-          (click)="generateMultipleFiles()">
-
-          <nb-icon icon="flash-outline"></nb-icon>
-
-          Tạo tự động
-
-        </button>
-
-      </div>
-
-    </nb-card-body>
-
-  </nb-card>
+        Tạo tự động
+      </button>
+    </div>
+  </nb-card-body>
+</nb-card>
