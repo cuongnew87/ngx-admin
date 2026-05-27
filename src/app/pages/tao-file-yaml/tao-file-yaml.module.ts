@@ -10,6 +10,7 @@ import { ConfirmPopupComponent } from './confirm-popup/confirm-popup.component';
 import { QuickGenerateComponent } from './quick-generate/quick-generate.component';
 import { TabFilesComponent } from './tab-files/tab-files.component';
 import { HelmVersionSelectComponent } from './helm-version-select/helm-version-select.component';
+import { ModalActionsComponent } from './modal-actions/modal-actions.component';
 
 @NgModule({
   imports: [
@@ -33,7 +34,8 @@ import { HelmVersionSelectComponent } from './helm-version-select/helm-version-s
     ConfirmPopupComponent,
     QuickGenerateComponent,
     TabFilesComponent,
-    HelmVersionSelectComponent
+    HelmVersionSelectComponent,
+    ModalActionsComponent
   ],
 })
 export class TaoFileYamlModule { }

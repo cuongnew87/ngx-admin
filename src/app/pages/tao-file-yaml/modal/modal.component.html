@@ -32,39 +32,9 @@
 
 <!-- ACTION -->
 
-<div class="action-section">
-  <button
-    nbButton
-    ghost
-    status="info"
-    type="button"
-    (click)="showQuickGenerate = !showQuickGenerate"
-  >
-    <nb-icon
-      [icon]="showQuickGenerate ? 'chevron-up-outline' : 'flash-outline'"
-    >
-    </nb-icon>
-
-    {{ showQuickGenerate ? "Ẩn tạo nhanh" : "Gợi ý tạo file" }}
-  </button>
-
-  <button nbButton status="info" appearance="outline" (click)="addFile()">
-    Thêm file
-  </button>
-
-  <button nbButton status="success" (click)="exportYaml()">Export YAML</button>
-
-  <button
-    nbButton
-    status="danger"
-    appearance="outline"
-    type="button"
-    nbTooltip="Xóa toàn bộ dữ liệu đã nhập"
-    nbTooltipPlacement="top"
-    (click)="resetForm()"
-  >
-    <nb-icon icon="refresh-outline"></nb-icon>
-
-    Reset
-  </button>
-</div>
+<app-modal-actions
+  [(showQuickGenerate)]="showQuickGenerate"
+  (addFile)="addFile()"
+  (exportYaml)="exportYaml()"
+  (resetForm)="resetForm()">
+</app-modal-actions>

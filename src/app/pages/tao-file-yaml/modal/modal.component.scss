@@ -1,22 +1,5 @@
 @import '../../../@theme/styles/themes';
 
-.action-section {
-  position: sticky;
-  bottom: 0;
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  margin-top: 1.5rem;
-  background: #1a2138;
-  border-top: 1px solid #2e3a59;
-  z-index: 10;
-
-  button[nbButton] {
-    border: 1px solid rgba(94, 79, 255, 0.45);
-  }
-}
-
 // Giữ lại các class phục vụ cho tính năng Quick Generate nếu component này nằm trong Modal
 .quick-generate-card {
   margin-top: 1rem;

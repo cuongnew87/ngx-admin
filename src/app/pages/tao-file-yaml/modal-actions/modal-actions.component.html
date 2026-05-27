@@ -1,0 +1,42 @@
+<div class="action-section">
+  <button
+    nbButton
+    ghost
+    status="info"
+    type="button"
+    (click)="toggleQuickGenerate()"
+  >
+    <nb-icon
+      [icon]="showQuickGenerate ? 'chevron-up-outline' : 'flash-outline'"
+    >
+    </nb-icon>
+
+    {{ showQuickGenerate ? "Ẩn tạo nhanh" : "Gợi ý tạo file" }}
+  </button>
+
+  <button
+    nbButton
+    status="info"
+    appearance="outline"
+    (click)="onAddFileClick()"
+  >
+    Thêm file
+  </button>
+
+  <button nbButton status="success" (click)="onExportYamlClick()">
+    Export YAML
+  </button>
+
+  <button
+    nbButton
+    status="danger"
+    appearance="outline"
+    type="button"
+    nbTooltip="Xóa toàn bộ dữ liệu đã nhập"
+    nbTooltipPlacement="top"
+    (click)="onResetFormClick()"
+  >
+    <nb-icon icon="refresh-outline"></nb-icon>
+    Reset
+  </button>
+</div>
