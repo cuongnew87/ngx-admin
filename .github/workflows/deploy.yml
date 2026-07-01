@@ -1,0 +1,40 @@
+name: Auto Deploy Angular to gh-pages
+
+on:
+  push:
+    branches:
+      - main # Kích hoạt khi có commit push vào nhánh main
+
+permissions:
+  contents: write # Cấp quyền cho GitHub Actions có thể push code sang nhánh gh-pages
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài đặt Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Cài đặt dependencies
+        run: npm ci --legacy-peer-deps # Thêm flag này vì ngx-admin thường dùng các thư viện cũ dễ xung đột phiên bản
+
+      - name: Build dự án Angular
+        run: npx ng build --configuration=production --base-href /ngx-admin/
+
+      - name: Tạo file 404.html để fix lỗi vào link trực tiếp
+        # Lệnh này copy index.html thành 404.html để bạn truy cập thẳng được vào đường dẫn /pages/tao-file-yaml
+        run: cp dist/ngx-admin/browser/index.html dist/ngx-admin/browser/404.html
+
+      - name: Tự động push sang nhánh gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist/ngx-admin/browser # Thư mục chứa kết quả sau khi build của bạn
+          branch: gh-pages # Nhánh mục tiêu để GitHub Pages chạy
+          clean: true # Tự động dọn dẹp các file cũ không còn dùng trong bản build mới
